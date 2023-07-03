@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Enums\ImportStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,8 +15,18 @@ class Import extends Model
     protected $fillable = [
         'provider_id',
         'user_id',
+        'warehouse_branch_id',
         'status',
     ];
+
+    protected $casts = [
+        'status' => ImportStatus::class
+    ];
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class);
+    }
 
     public static function boot()
     {

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Enums\ExportStatus;
+use App\Models\Enums\CauseExport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,19 @@ class Export extends Model
         'provider_id',
         'user_id',
         'status',
+        'warehouse_branch_id',
+        'cause'
     ];
+
+    protected $casts = [
+        'status' => ExportStatus::class,
+        'cause' => CauseExport::class,
+    ];
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class);
+    }
 
     public function user(): BelongsTo
     {

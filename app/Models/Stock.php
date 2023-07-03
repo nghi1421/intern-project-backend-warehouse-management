@@ -15,8 +15,14 @@ class Stock extends Model
         'import_id',
         'category_id',
         'position_id',
+        'warehouse_branch_id',
         'expiry_date',
     ];
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class);
+    }
 
     public function position(): BelongsTo
     {
