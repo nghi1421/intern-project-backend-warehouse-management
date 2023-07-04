@@ -12,8 +12,8 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'id' => 1,
-                'name' => 'Nguyen Van Admin',
-                'username' => 'nguyenvana123',
+                'name' => 'Nguyen Van Anh',
+                'username' => 'nguyenvananh123',
                 'password' => '123123123',
                 'phone_number' => '0123123123',
                 'avatar' => '',
