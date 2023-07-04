@@ -11,5 +11,15 @@ class DemoSeeder extends Seeder
         $this->call(ActionsSeeder::class);
 
         $this->call(PositionSeeder::class);
+
+        $this->call(WarehouseBranchSeeder::class);
+
+        $this->call(UserSeeder::class);
+
+        $this->call(PrincipleSeeder::class);
+
+        $this->call(CategorySeeder::class);
+
+        $this->call(ProviderSeeder::class);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-enum ExportStatus: string
+enum ExportStatus: int
 {
     case Canceled = 0;
 

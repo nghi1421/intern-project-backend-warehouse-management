@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-enum ImportStatus: string
+enum ImportStatus: int
 {
     case Canceled = 0;
 

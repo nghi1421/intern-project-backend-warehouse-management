@@ -17,7 +17,7 @@ return new class extends Migration
 
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unque();
             $table->timestamps();
         });
 
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('address');
             $table->boolean('opening')->default(1);
-            $table->string('phone_number', 15);
+            $table->string('phone_number', 15)->unique();
             $table->timestamps();
         });
 
@@ -62,24 +62,30 @@ return new class extends Migration
 
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->string('description');
+            $table->string('name', 50)->unique();
+            $table->string('description')->nullable();
             $table->string('unit', 20);
             $table->timestamps();
         });
 
-        Schema::create('conservations', function (Blueprint $table) {
+        Schema::create('principles', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->string('description')->nullable();
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
+        });
+
+        Schema::create('category_principles', function (Blueprint $table) {
+            $table->foreignId('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreignId('principle_id');
+            $table->foreign('principle_id')->references('id')->on('principles');
+            $table->primary(['category_id', 'principle_id']);
         });
 
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->string('email');
             $table->string('address');
             $table->string('phone_number', 15);
@@ -159,7 +165,8 @@ return new class extends Migration
         Schema::dropIfExists('position_actions');
         Schema::dropIfExists('positions');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('conservations');
+        Schema::dropIfExists('principles');
+        Schema::dropIfExists('category_principles');
         Schema::dropIfExists('categories');
         Schema::dropIfExists('customers');
         Schema::dropIfExists('imports');

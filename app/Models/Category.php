@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
@@ -19,9 +20,9 @@ class Category extends Model
         'description'
     ];
 
-    public function conservations(): HasMany
+    public function principles(): BelongsToMany
     {
-        return $this->hasMany(Conservation::class);
+        return $this->belongsToMany(Principle::class, 'category_principles');
     }
 
     public function import(): BelongsTo

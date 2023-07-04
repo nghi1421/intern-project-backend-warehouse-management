@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-enum CauseExport: string
+enum CauseExport: int
 {
     case Normal = 1;
 

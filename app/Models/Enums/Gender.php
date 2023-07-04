@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-enum ExportStatus: string
+enum Gender: int
 {
     case Male = 0;
 
