@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Staff;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,10 +28,19 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        $token = $user->createToken($user->position->name)->plainTextToken;
+        try {
+            $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
+        } catch (ModelNotFoundException $exception) {
+
+            return new JsonResponse(data: [
+                'message' => 'Staff infomation not found',
+            ], status: 400);
+        }
+
+        $token = $user->createToken($user->role->name)->plainTextToken;
 
         return new JsonResponse(data: [
-            'user' => $user,
+            'staff_infomation' => $staff,
             'token' => $token,
             'message' => 'Login successfully',
         ]);
