@@ -15,6 +15,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Nguyen Van Anh',
                 'phone_number' => '0123123123',
                 'avatar' => '',
+                'user_id' => 1,
                 'address' => 'Man Thien',
                 'gender' => 1,
                 'position_id' => 1,
@@ -27,6 +28,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Le Thi Thu Thao',
                 'phone_number' => '0111222333',
                 'avatar' => '',
+                'user_id' => 2,
                 'address' => 'Vung Tau',
                 'gender' => 0,
                 'position_id' => 2,
@@ -39,6 +41,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Tran Dinh Huy',
                 'phone_number' => '011447754',
                 'avatar' => '',
+                'user_id' => 3,
                 'address' => 'Thu Dau Mot',
                 'gender' => 1,
                 'position_id' => 3,
@@ -51,6 +54,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Nguyen Viet Duc',
                 'phone_number' => '0124578124',
                 'avatar' => '',
+                'user_id' => 4,
                 'address' => 'Thu Duc, Tp Ho Chi Minh',
                 'gender' => 1,
                 'position_id' => 3,
@@ -63,6 +67,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Nguyen Viet Hai',
                 'phone_number' => '0114455668',
                 'avatar' => '',
+                'user_id' => 5,
                 'address' => 'Quan 1',
                 'gender' => 1,
                 'position_id' => 3,
@@ -75,6 +80,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Le Van Luong',
                 'phone_number' => '0999888777',
                 'avatar' => '',
+                'user_id' => 6,
                 'address' => 'Quan 9',
                 'gender' => 1,
                 'position_id' => 2,
@@ -87,6 +93,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Phan Van Kiet',
                 'phone_number' => '0159753684',
                 'avatar' => '',
+                'user_id' => 7,
                 'address' => 'Quan 12',
                 'gender' => 1,
                 'position_id' => 3,
@@ -99,6 +106,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Nguyen Le Anh Kiet',
                 'phone_number' => '0111444558',
                 'avatar' => '',
+                'user_id' => 8,
                 'address' => 'Quan 2',
                 'gender' => 1,
                 'position_id' => 3,
@@ -111,6 +119,7 @@ class StaffSeeder extends Seeder
                 'name' => 'Tran Van Vien',
                 'phone_number' => '0987111111',
                 'avatar' => '',
+                'user_id' => 9,
                 'address' => 'Quan 2',
                 'gender' => 1,
                 'position_id' => 3,
@@ -120,10 +129,8 @@ class StaffSeeder extends Seeder
             ],
         ];
 
-        foreach ($staffs as $index => $staff) {
-            $newStaff = Staff::query()->create($staff);
-
-            $newStaff->user()->associate($index + 1);
+        foreach ($staffs as $staff) {
+            Staff::query()->create($staff);
         }
     }
 }

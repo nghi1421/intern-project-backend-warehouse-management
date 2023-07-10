@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\Branch;
 use Illuminate\Database\Seeder;
 
-class WarehouseBranchSeeder extends Seeder
+class BranchSeeder extends Seeder
 {
 
     public function run(): void

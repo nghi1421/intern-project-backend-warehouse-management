@@ -14,6 +14,8 @@ class Staff extends Model
     use HasFactory;
     use HasUser;
 
+    protected $table = 'staffs';
+
     protected $fillable = [
         'name',
         'phone_number',

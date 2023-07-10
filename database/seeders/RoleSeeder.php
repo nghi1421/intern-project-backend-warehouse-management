@@ -33,7 +33,7 @@ class RoleSeeder extends Seeder
 
             Role::query()
                 ->create(['name' => $role['name']])
-                ->actions()
+                ->permissions()
                 ->attach($role['actionIds']);
         }
     }

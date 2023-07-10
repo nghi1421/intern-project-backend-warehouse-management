@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Action;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
