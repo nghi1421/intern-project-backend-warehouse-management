@@ -16,7 +16,7 @@ class Export extends Model
     use BelongsToStaff;
 
     protected $fillable = [
-        'provider_id',
+        'branch_id',
         'user_id',
         'status',
         'warehouse_branch_id',
