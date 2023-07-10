@@ -3,13 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\Action;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
-class ActionsSeeder extends Seeder
+class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $actions = [
+        $permissions = [
             [
                 'id' => 1,
                 'name' => 'manage_all_user', //Manager
@@ -127,9 +128,9 @@ class ActionsSeeder extends Seeder
             ],
         ];
 
-        foreach ($actions as $action) {
+        foreach ($permissions as $permission) {
 
-            Action::query()->create($action);
+            Permission::query()->create($permission);
         }
     }
 }
