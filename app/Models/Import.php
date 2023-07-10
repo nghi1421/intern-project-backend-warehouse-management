@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToStaff;
 use App\Models\Enums\ImportStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Import extends Model
 {
     use HasFactory;
+    use BelongsToStaff;
 
     protected $fillable = [
         'provider_id',
@@ -42,14 +44,9 @@ class Import extends Model
         });
     }
 
-    public function user(): BelongsTo
+    public function provider(): BelongsTo
     {
-        return $this->belongsto(User::class);
-    }
-
-    public function customer(): BelongsTo
-    {
-        return $this->belongsto(Customer::class);
+        return $this->belongsto(Provider::class);
     }
 
     public function categories(): BelongsToMany

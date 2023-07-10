@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\HasManyStaff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class WarehouseBranch extends Model
+class Branch extends Model
 {
     use HasFactory;
-    use HasManyStaff;
 
     protected $fillable = [
         'name',
@@ -20,18 +18,8 @@ class WarehouseBranch extends Model
         'phone_number',
     ];
 
-    public function imports(): HasMany
-    {
-        return $this->hasMany(Import::class);
-    }
-
     public function exports(): HasMany
     {
         return $this->hasMany(Export::class);
-    }
-
-    public function stocks(): HasMany
-    {
-        return $this->hasMany(Stock::class);
     }
 }

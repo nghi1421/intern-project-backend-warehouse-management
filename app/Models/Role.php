@@ -6,23 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-
-class Action extends Model
+class Role extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'description',
     ];
 
-    public function users(): BelongsToMany
+    public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function positions(): BelongsToMany
-    {
-        return $this->belongsToMany(Position::class);
+        return $this->belongsToMany(Permissions::class);
     }
 }

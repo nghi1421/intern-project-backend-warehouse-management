@@ -8,11 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('actions', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50);
+            $table->timestamps();
+        });
+
+        Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
             $table->string('description');
             $table->timestamps();
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foriegnId('role_id')->default(1);
+            $table->foreign('role_id')->references('id')->on('roles');
         });
 
         Schema::create('positions', function (Blueprint $table) {
@@ -21,20 +32,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_actions', function (Blueprint $table) {
-            $table->foreignId('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreignId('action_id');
-            $table->foreign('action_id')->references('id')->on('actions');
-            $table->primary(['user_id', 'action_id']);
-        });
-
-        Schema::create('position_actions', function (Blueprint $table) {
-            $table->foreignId('position_id');
-            $table->foreign('position_id')->references('id')->on('positions');
-            $table->foreignId('action_id');
-            $table->foreign('action_id')->references('id')->on('actions');
-            $table->primary(['position_id', 'action_id']);
+        Schema::create('role_permissions', function (Blueprint $table) {
+            $table->foreignId('role_id');
+            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreignId('permission_id');
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->primary(['role_id', 'permission_id']);
         });
 
         Schema::create('warehouse_branches', function (Blueprint $table) {
@@ -47,7 +50,19 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('users', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50);
+            $table->string('email');
+            $table->string('address');
+            $table->boolean('opening')->default(1);
+            $table->string('phone_number', 15)->unique();
+            $table->timestamps();
+        });
+
+        Schema::create('staffs', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
             $table->string('phone_number', 15)->unique();
             $table->string('avatar')->nullable();
             $table->string('address', 100);
@@ -56,8 +71,11 @@ return new class extends Migration
             $table->foreign('position_id')->references('id')->on('positions');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
+            $table->foreignId('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->date('dob')->nullable();
             $table->boolean('working', true);
+            $table->timestamps();
         });
 
         Schema::create('categories', function (Blueprint $table) {
@@ -105,8 +123,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('provider_id');
             $table->foreign('provider_id')->references('id')->on('providers');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('staff_id');
+            $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
@@ -126,10 +144,12 @@ return new class extends Migration
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('cause')->default(1);
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('staff_id');
+            $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
+            $table->foreignId('branch_id');
+            $table->foreign('branch_id')->references('id')->on('branches');
             $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
             $table->timestamps();
         });
@@ -160,11 +180,12 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('users');
         Schema::dropIfExists('actions');
-        Schema::dropIfExists('user_actions');
+        Schema::dropIfExists('staff_actions');
         Schema::dropIfExists('position_actions');
         Schema::dropIfExists('positions');
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('staffs');
         Schema::dropIfExists('principles');
         Schema::dropIfExists('category_principles');
         Schema::dropIfExists('categories');
