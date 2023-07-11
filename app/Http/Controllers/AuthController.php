@@ -41,6 +41,7 @@ class AuthController extends Controller
 
         return new JsonResponse(data: [
             'staff_information' => $staff,
+            'role' => $user->role->name,
             'token' => $token,
             'message' => 'Login successfully',
         ]);
