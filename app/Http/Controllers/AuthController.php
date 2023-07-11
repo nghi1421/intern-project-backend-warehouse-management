@@ -40,7 +40,7 @@ class AuthController extends Controller
         $token = $user->createToken($user->role->name)->plainTextToken;
 
         return new JsonResponse(data: [
-            'staff_infomation' => $staff,
+            'staff_information' => $staff,
             'token' => $token,
             'message' => 'Login successfully',
         ]);
