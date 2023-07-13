@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,8 +13,7 @@ class Stock extends Model
     protected $fillable = [
         'import_id',
         'category_id',
-        'position_id',
-        'warehouse_branch_id',
+        'location_id',
         'expiry_date',
     ];
 
@@ -24,9 +22,9 @@ class Stock extends Model
         return $this->belongsTo(WarehouseBranch::class);
     }
 
-    public function position(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function import(): BelongsTo

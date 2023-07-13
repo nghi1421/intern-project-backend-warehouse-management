@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class WarehouseBranch extends Model
 {
     use HasFactory;
-    use HasManyStaff;
 
     protected $fillable = [
         'name',
@@ -28,10 +27,5 @@ class WarehouseBranch extends Model
     public function exports(): HasMany
     {
         return $this->hasMany(Export::class);
-    }
-
-    public function stocks(): HasMany
-    {
-        return $this->hasMany(Stock::class);
     }
 }

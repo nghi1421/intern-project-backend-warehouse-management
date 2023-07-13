@@ -50,16 +50,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('branches', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50);
-            $table->string('email');
-            $table->string('address');
-            $table->boolean('opening')->default(1);
-            $table->string('phone_number', 15)->unique();
-            $table->timestamps();
-        });
-
         Schema::create('staffs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -69,8 +59,6 @@ return new class extends Migration
             $table->tinyInteger('gender'); //0: nu //1:nam 2: khac
             $table->foreignId('position_id');
             $table->foreign('position_id')->references('id')->on('positions');
-            $table->foreignId('warehouse_branch_id');
-            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->foreignId('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->date('dob')->nullable();
@@ -110,12 +98,29 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('shelves', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50)->unique();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('blocks', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50)->unique();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->string('block_name', 50);
-            $table->string('shelf_name', 50);
-            $table->unique(['block_name', 'shelf_name']);
-            $table->text('description');
+            $table->foreignId('block_id');
+            $table->foreignId('shelf_id');
+            $table->foreignId('warehouse_branch_id');
+            $table->foreign('block_id')->references('id')->on('blocks');
+            $table->foreign('shelf_id')->references('id')->on('shelves');
+            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
+            $table->unique(['block_id', 'shelf_id', 'warehouse_branch_id']);
             $table->timestamps();
         });
 
@@ -125,8 +130,6 @@ return new class extends Migration
             $table->foreign('provider_id')->references('id')->on('providers');
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
-            $table->foreignId('warehouse_branch_id');
-            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
             $table->timestamps();
         });
@@ -146,10 +149,6 @@ return new class extends Migration
             $table->tinyInteger('cause')->default(1);
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
-            $table->foreignId('warehouse_branch_id');
-            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->foreignId('branch_id');
-            $table->foreign('branch_id')->references('id')->on('branches');
             $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
             $table->timestamps();
         });
@@ -167,8 +166,6 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('import_id');
-            $table->foreignId('warehouse_branch_id');
-            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->foreign('import_id')->references('id')->on('imports');
             $table->foreignId('category_id');
             $table->foreign('category_id')->references('id')->on('categories');

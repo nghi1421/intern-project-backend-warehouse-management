@@ -24,7 +24,6 @@ class Staff extends Model
         'gender',
         'position_id',
         'user_id',
-        'warehouse_branch_id',
         'dob',
         'working',
     ];

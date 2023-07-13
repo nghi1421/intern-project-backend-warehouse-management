@@ -14,8 +14,6 @@ class DemoSeeder extends Seeder
 
         $this->call(WarehouseBranchSeeder::class);
 
-        $this->call(BranchSeeder::class);
-
         $this->call(RoleSeeder::class);
 
         $this->call(UserSeeder::class);

@@ -16,7 +16,6 @@ class Export extends Model
     use BelongsToStaff;
 
     protected $fillable = [
-        'branch_id',
         'user_id',
         'status',
         'warehouse_branch_id',
@@ -31,10 +30,5 @@ class Export extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'export_details')->withPivot(['quantity']);
-    }
-
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class);
     }
 }
