@@ -28,11 +28,6 @@ class Staff extends Model
         'working',
     ];
 
-    protected $casts = [
-        'gender' => Gender::class,
-        'working' => 'boolean',
-    ];
-
     public function branch(): BelongsTo
     {
         return $this->belongsTo(WarehouseBranch::class);

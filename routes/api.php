@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('logout');
 
     Route::prefix('manager')->group(function () {
+        Route::resource('staffs', StaffController::class);
     });
 });
 

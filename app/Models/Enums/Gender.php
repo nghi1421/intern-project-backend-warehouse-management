@@ -4,9 +4,9 @@ namespace App\Models\Enums;
 
 enum Gender: int
 {
-    case Male = 0;
+    case Female = 0;
 
-    case Female = 1;
+    case Male = 1;
 
     case Other = 2;
 
@@ -16,9 +16,9 @@ enum Gender: int
 
             default => null,
 
-            self::Male => __('Male'),
-
             self::Female => __('Female'),
+
+            self::Male => __('Male'),
 
             self::Other => __('Other'),
         };
