@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateStaff;
+use App\Http\Requests\UpdateStaff;
 use App\Http\Resources\StaffCollection;
 use App\Models\Staff;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
@@ -14,19 +16,47 @@ class StaffController extends Controller
         return new StaffCollection(Staff::query()->paginate(5));
     }
 
-    public function store(Request $request)
+    public function show(Staff $staff): JsonResponse
     {
+        return new JsonResponse($staff);
     }
 
-    public function edit(string $id)
+    public function store(CreateStaff $request): JsonResponse
     {
+        try {
+            Staff::query()->create($request->validated());
+        } catch (Exception $exception) {
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return new JsonResponse(['message' => 'Staff successfully created.']);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateStaff $request, Staff $staff): JsonResponse
     {
+        try {
+            $staff->update($request->validated());
+        } catch (Exception $exception) {
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return new JsonResponse(['message' => 'Staff successfully updated.']);
     }
 
-    public function destroy(string $id)
+    public function destroy(Staff $staff): JsonResponse
     {
+        try {
+            $staff->delete();
+        } catch (Exception $exception) {
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return new JsonResponse(['message' => 'Staff successfully deleted.']);
     }
 }
