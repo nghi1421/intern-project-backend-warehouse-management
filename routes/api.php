@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -13,9 +15,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])
         ->name('logout');
 
-    Route::prefix('manager')->group(function () {
-        Route::resource('staffs', StaffController::class);
-    });
+    Route::resource('staffs', StaffController::class);
+
+    Route::resource('positions', PositionController::class);
+
+    Route::resource('categories', CategoryController::class);
 });
 
 

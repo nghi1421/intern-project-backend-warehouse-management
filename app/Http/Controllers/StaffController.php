@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateStaff;
-use App\Http\Requests\UpdateStaff;
+use App\Http\Requests\Staff\CreateStaff;
+use App\Http\Requests\Staff\UpdateStaff;
 use App\Http\Resources\StaffCollection;
 use App\Models\Staff;
 use Exception;
