@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\WarehouseBranchController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('positions', PositionController::class);
 
     Route::resource('categories', CategoryController::class);
+
+    Route::resource('warehouse-branches', WarehouseBranchController::class);
 });
 
 
