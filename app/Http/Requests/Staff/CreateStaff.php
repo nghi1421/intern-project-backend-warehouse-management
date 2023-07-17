@@ -25,7 +25,7 @@ class CreateStaff extends FormRequest
                 'required',
                 'string',
                 'regex:/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/',
-                'unique.staffs,phone_number'
+                'unique:staffs,phone_number'
             ],
             'avatar' => [
                 'sometimes',
@@ -44,11 +44,11 @@ class CreateStaff extends FormRequest
             'position_id' => [
                 'required',
                 'numeric',
-                'exists.positions,id'
+                'exists:positions,id'
             ],
             'user_id' => [
                 'sometimes',
-                'exists.users,id'
+                'exists:users,id'
             ],
             'dob' => [
                 'required',
