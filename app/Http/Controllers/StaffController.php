@@ -101,20 +101,20 @@ class StaffController extends Controller
 
     public function destroy(Staff $staff): JsonResponse
     {
-        if ($staff->import->count() > 0) {
+        if ($staff->imports->count() > 0) {
             return new JsonResponse([
                 'message' => 'Could not delete staff, created import',
             ], 422);
         }
 
-        if ($staff->export->count() > 0) {
+        if ($staff->exports->count() > 0) {
             return new JsonResponse([
                 'message' => 'Could not delete staff, created export',
             ], 422);
         }
 
         try {
-            if ($staff->delete()) {
+            if (!$staff->delete()) {
                 return new JsonResponse([
                     'message' => 'Delete staff failed',
                 ], 422);
