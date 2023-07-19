@@ -14,10 +14,13 @@ class StaffResource extends JsonResource
         return [
             'id' => $this->getKey(),
             'name' => $this->name,
+            'position_id' => $this->position_id,
             'position' => $this->position->name,
             'phone_number' => $this->phone_number,
+            'address' => $this->address,
             'gender' => Gender::tryFrom($this->gender)->label(),
             'dob' => $this->dob,
+            'working' => $this->working,
             'status' => WorkingStatus::tryFrom($this->working)->label(),
         ];
     }
