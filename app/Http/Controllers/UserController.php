@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserCollection;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(): UserCollection
     {
-        return new JsonResponse(User::query()->paginate(5));
+        return new UserCollection(User::query()->paginate(5));
     }
 
     public function store(Request $request)

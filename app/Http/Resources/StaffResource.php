@@ -17,6 +17,7 @@ class StaffResource extends JsonResource
             'position' => $this->position->name,
             'phone_number' => $this->phone_number,
             'gender' => Gender::tryFrom($this->gender)->label(),
+            'dob' => $this->dob->format('Y-m-d'),
             'status' => WorkingStatus::tryFrom($this->working)->label(),
         ];
     }

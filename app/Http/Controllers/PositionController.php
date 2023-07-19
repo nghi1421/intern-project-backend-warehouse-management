@@ -14,7 +14,7 @@ class PositionController extends Controller
     public function index(): JsonResponse
     {
         return new JsonResponse([
-            'positions' => Position::query()->get(),
+            'positions' => Position::query()->select(['id', 'name'])->get(),
             'pagination' => Position::query()->paginate(5)
         ]);
     }
