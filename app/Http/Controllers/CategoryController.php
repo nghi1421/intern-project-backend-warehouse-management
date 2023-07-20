@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\CreateCategory;
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -15,9 +17,22 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         return new JsonResponse([
-            'categories' => Category::query()->get(),
-            'pagination' => Category::query()->paginate(5)
+            'categories' => new CategoryCollection(Category::query()->get()),
+            'pagination' => new CategoryCollection(Category::query()->paginate(5))
         ]);
+    }
+
+    public function show(string $id): JsonResponse
+    {
+        $category = Category::query()->find($id);
+
+        if (!$category) {
+            return new JsonResponse([
+                'message' => 'Category not found',
+            ], 404);
+        }
+
+        return new JsonResponse(new CategoryResource($category));
     }
 
     public function store(CreateCategory $request): JsonResponse
@@ -35,8 +50,16 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request, Category $category)
+    public function update(Request $request, string $id)
     {
+        $category = Category::query()->find($id);
+
+        if (!$category) {
+            return new JsonResponse([
+                'message' => 'Category not found',
+            ], 404);
+        }
+
         $validated = Validator::make($request->all(), [
             'name' => [
                 'required',
