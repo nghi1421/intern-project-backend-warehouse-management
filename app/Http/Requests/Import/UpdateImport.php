@@ -5,7 +5,7 @@ namespace App\Http\Requests\Import;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateImport extends FormRequest
+class UpdateImport extends FormRequest
 {
     public function authorize(): bool
     {

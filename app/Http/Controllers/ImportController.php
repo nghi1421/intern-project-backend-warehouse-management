@@ -30,13 +30,18 @@ class ImportController extends Controller
 
             $amounts = $request->input('amounts');
 
-            array_walk($amounts, function (&$item) {
-                $item = ['amount' => $item];
-            });
+            $unitPrices = $request->input('unit_prices');
+
+            $importDetails = array_map(fn ($value, $index) => [
+                'quantity' => $value,
+                'unit_price' => $unitPrices[$index]
+            ], $amounts, array_keys($amounts));
+
+            $importDetails = array_combine($categories, $importDetails);
 
             $newImport = Import::query()->create($request->validated());
 
-            $newImport->categories()->sync(array_combine($categories, $amounts));
+            $newImport->categories()->sync($importDetails);
 
             DB::commit();
         } catch (Exception $exception) {
@@ -65,12 +70,73 @@ class ImportController extends Controller
         return new JsonResponse(new ImportResource($import));
     }
 
-    public function update(Request $request, string $id)
+    public function update(CreateImport $request, string $id)
     {
+        $import =  Import::query()->find($id);
+
+        if (!$import) {
+            return new JsonResponse([
+                'message' => 'Import not found',
+            ], 404);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $categories = $request->input('categories');
+
+            $amounts = $request->input('amounts');
+
+            $unitPrices = $request->input('unit_prices');
+
+            $importDetails = array_map(fn ($value, $index) => [
+                'quantity' => $value,
+                'unit_price' => $unitPrices[$index]
+            ], $amounts, array_keys($amounts));
+
+            $importDetails = array_combine($categories, $importDetails);
+
+            $import->categories()->sync($importDetails);
+
+            DB::commit();
+        } catch (Exception $exception) {
+            DB::rollback();
+
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return new JsonResponse([
+            'message' => 'Update import successfully'
+        ]);
     }
 
 
     public function destroy(string $id)
     {
+        $import =  Import::query()->find($id);
+
+        if (!$import) {
+            return new JsonResponse([
+                'message' => 'Import not found',
+            ], 404);
+        }
+
+        try {
+            if (!$import->delete()) {
+                return new JsonResponse([
+                    'message' => 'Delete import failed',
+                ], 422);
+            }
+        } catch (Exception $exception) {
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return new JsonResponse([
+            'message' => 'Delete import successfully'
+        ]);
     }
 }
