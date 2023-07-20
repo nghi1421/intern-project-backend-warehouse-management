@@ -16,13 +16,8 @@ class Import extends Model
 
     protected $fillable = [
         'provider_id',
-        'user_id',
-        'warehouse_branch_id',
+        'staff_id',
         'status',
-    ];
-
-    protected $casts = [
-        'status' => ImportStatus::class
     ];
 
     public function branch(): BelongsTo
