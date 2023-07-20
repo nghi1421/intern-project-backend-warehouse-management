@@ -60,24 +60,26 @@ class CategorySeeder extends Seeder
 
             $newCategory = Category::query()->create($category);
 
-            $numberOfPrinciple = fake()->numberBetween(0, 5);
+            $newCategory->principles()->attach(fake()->randomElements($principleIds));
 
-            $categoryPrincipleIds = [];
+            // $numberOfPrinciple = fake()->numberBetween(0, 5);
 
-            if (!$numberOfPrinciple === 0) {
+            // $categoryPrincipleIds = [];
 
-                foreach (range(0, $numberOfPrinciple) as $index) {
+            // if ($numberOfPrinciple !== 0) {
 
-                    $principleId = fake()->randomElement($principleIds);
+            //     foreach (range(0, $numberOfPrinciple) as $index) {
 
-                    if (!in_array($principleId, $principleIds)) {
+            //         $principleId = fake()->randomElements($principleIds);
 
-                        $categoryPrincipleIds[] = $principleId;
-                    }
-                }
+            //         if (!in_array($principleId, $principleIds)) {
 
-                $newCategory->principles()->attach($categoryPrincipleIds);
-            }
+            //             $categoryPrincipleIds[] = $principleId;
+            //         }
+            //     }
+
+            //     $newCategory->principles()->attach($categoryPrincipleIds);
+            // }
         }
     }
 }
