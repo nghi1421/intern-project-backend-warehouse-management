@@ -15,7 +15,7 @@ class CreateCategory extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:50', 'unique:categories,name'],
-            'description' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
             'unit' => ['required', 'string', 'max:20'],
         ];
     }
