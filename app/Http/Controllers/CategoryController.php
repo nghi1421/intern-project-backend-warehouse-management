@@ -6,6 +6,7 @@ use App\Http\Requests\Category\CreateCategory;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -14,8 +15,16 @@ use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection|Collection
     {
+        $request->validate([
+            'no_pagination' => ['nullable', 'boolean'],
+        ]);
+
+        if ($request->input('no_pagination')) {
+            return Category::query()->select('id', 'name', 'unit')->get();
+        }
+
         return CategoryResource::collection(Category::query()->paginate(5));
     }
 
