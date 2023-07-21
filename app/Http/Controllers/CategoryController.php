@@ -9,6 +9,7 @@ use App\Models\Category;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -17,9 +18,14 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         return new JsonResponse([
-            'categories' => new CategoryCollection(Category::query()->get()),
-            'pagination' => new CategoryCollection(Category::query()->paginate(5))
+            'categories' => Category::query()->select(['id', 'name'])->get(),
+            'pagination' => new CategoryCollection(Category::query()->paginate(5), true)
         ]);
+    }
+
+    public function pagination(): JsonResponse
+    {
+        return new JsonResponse(new CategoryCollection(Category::query()->paginate(5)));
     }
 
     public function show(string $id): JsonResponse
