@@ -12,12 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class ImportController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(): ImportCollection
     {
-        return new JsonResponse([
-            'imports' => new ImportCollection(Import::query()->get()),
-            'pagination' => new ImportCollection(Import::query()->paginate(5)),
-        ]);
+        return new ImportCollection(Import::query()->paginate(5));
     }
 
     public function store(CreateImport $request): JsonResponse

@@ -3,29 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\CreateCategory;
-use App\Http\Resources\CategoryCollection;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(): AnonymousResourceCollection
     {
-        return new JsonResponse([
-            'categories' => Category::query()->select(['id', 'name'])->get(),
-            'pagination' => new CategoryCollection(Category::query()->paginate(5), true)
-        ]);
-    }
-
-    public function pagination(): JsonResponse
-    {
-        return new JsonResponse(new CategoryCollection(Category::query()->paginate(5)));
+        return CategoryResource::collection(Category::query()->paginate(5));
     }
 
     public function show(string $id): JsonResponse
