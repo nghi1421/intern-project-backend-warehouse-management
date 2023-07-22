@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseBranchController;
@@ -29,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('warehouse-branches', WarehouseBranchController::class);
 
     Route::resource('imports', ImportController::class);
+
+    Route::resource('providers', ProviderController::class);
 });
 
 
