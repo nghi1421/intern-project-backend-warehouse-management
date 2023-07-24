@@ -10,13 +10,23 @@ class ImportResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $categories = array_map(function ($category) {
+            $quantity = $category['pivot']['quantity'];
+            $unitPrice = $category['pivot']['unit_price'];
+            unset($category['pivot']);
+            return [
+                ...$category,
+                'amount' => $quantity,
+                'unit_price' => $unitPrice
+            ];
+        }, $this->categories()->select(['id', 'name', 'unit'])->get()->toArray());
+
         return [
             'id' => $this->id,
-            'staff_id' => $this->staff_id,
-            'staff_name' => $this->staff->name,
+            'staff' => $this->staff,
+            'categories' => $categories,
+            'provider' => $this->provider,
             'status' => ImportStatus::tryFrom($this->status)->label(),
-            'propvider_id' => $this->provider_id,
-            'provider_name' => $this->provider->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
