@@ -24,6 +24,8 @@ class ImportResource extends JsonResource
         return [
             'id' => $this->id,
             'staff' => $this->staff,
+            'staff_name' => $this->staff->name,
+            'provider_name' => $this->provider->name,
             'categories' => $categories,
             'provider' => $this->provider,
             'status' => ImportStatus::tryFrom($this->status)->label(),
