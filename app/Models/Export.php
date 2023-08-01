@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\BelongsToStaff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Export extends Model
@@ -18,6 +19,11 @@ class Export extends Model
         'warehouse_branch_id',
         'stocks'
     ];
+
+    public function warehouserBranch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class);
+    }
 
     public function categories(): BelongsToMany
     {

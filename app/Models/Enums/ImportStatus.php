@@ -6,9 +6,11 @@ enum ImportStatus: int
 {
     case Canceled = 0;
 
-    case InProgress = 1;
+    case Initial = 1;
 
-    case Completed = 2;
+    case Checking = 2;
+
+    case Completed = 3;
 
     public function label(): string|null
     {
@@ -16,11 +18,13 @@ enum ImportStatus: int
 
             default => null,
 
-            self::Canceled => __('Cancel'),
+            self::Canceled => __('Hủy'),
 
-            self::InProgress => __('In Progress'),
+            self::Initial => __('Khởi tạo'),
 
-            self::Completed => __('Completed'),
+            self::Checking => __('Đang kiểm tra'),
+
+            self::Completed => __('Hoàn thành'),
         };
     }
 }

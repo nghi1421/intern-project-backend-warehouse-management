@@ -21,11 +21,6 @@ class Import extends Model
         'status',
     ];
 
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(WarehouseBranch::class);
-    }
-
     public static function boot()
     {
         parent::boot();
@@ -38,6 +33,11 @@ class Import extends Model
                 $import->categories()->detach();
             }
         });
+    }
+
+    public function warehouserBranch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class);
     }
 
     public function provider(): BelongsTo

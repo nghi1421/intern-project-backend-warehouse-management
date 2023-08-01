@@ -4,9 +4,11 @@ namespace App\Models\Enums;
 
 enum WorkingStatus: int
 {
-    case Working = 1;
+    case Initial = 1;
 
-    case LeaveWork = 0;
+    case Packing = 2;
+
+    case Completed = 3;
 
     public function label(): string|null
     {
@@ -14,9 +16,11 @@ enum WorkingStatus: int
 
             default => null,
 
-            self::LeaveWork => __('Leave work'),
+            self::Initial => __('Khởi tạo'),
 
-            self::Working => __('Working'),
+            self::Packing => __('Đang đóng gói'),
+
+            self::Completed => __('Hoàn thành'),
         };
     }
 }
