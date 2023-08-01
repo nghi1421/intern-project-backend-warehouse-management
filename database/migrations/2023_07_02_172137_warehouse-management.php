@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->timestamps();
         });
 
@@ -43,10 +43,9 @@ return new class extends Migration
         Schema::create('warehouse_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->string('email');
+            $table->string('phone_number', 15)->unique();
             $table->string('address');
             $table->boolean('opening')->default(1);
-            $table->string('phone_number', 15)->unique();
             $table->timestamps();
         });
 
@@ -54,7 +53,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('phone_number', 15)->unique();
-            $table->string('avatar')->nullable();
             $table->string('address', 100);
             $table->tinyInteger('gender'); //0: nu //1:nam 2: khac
             $table->foreignId('position_id');
@@ -74,53 +72,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('principles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50)->unique();
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('category_principles', function (Blueprint $table) {
-            $table->foreignId('category_id');
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreignId('principle_id');
-            $table->foreign('principle_id')->references('id')->on('principles');
-            $table->primary(['category_id', 'principle_id']);
-        });
-
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50)->unique();
-            $table->string('email')->unique();
-            $table->string('address');
             $table->string('phone_number', 15)->unique();
-            $table->timestamps();
-        });
-
-        Schema::create('shelves', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50)->unique();
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('blocks', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50)->unique();
-            $table->string('description')->nullable();
+            $table->string('address');
             $table->timestamps();
         });
 
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('block_id');
-            $table->foreignId('shelf_id');
+            $table->string('name', 50);
             $table->foreignId('warehouse_branch_id');
-            $table->foreign('block_id')->references('id')->on('blocks');
-            $table->foreign('shelf_id')->references('id')->on('shelves');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->unique(['block_id', 'shelf_id', 'warehouse_branch_id']);
+            $table->unique(['name', 'warehouse_branch_id']);
+            $table->string('descrption', 255);
             $table->timestamps();
         });
 
@@ -130,7 +96,7 @@ return new class extends Migration
             $table->foreign('provider_id')->references('id')->on('providers');
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
-            $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
+            $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang kiem tra, 2 hoan thanh
             $table->timestamps();
         });
 
@@ -146,10 +112,10 @@ return new class extends Migration
 
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('cause')->default(1);
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
-            $table->tinyInteger('status'); //status 0: huy, 1 kiem tra, 2 hoan tat
+            $table->text('stocks')->nullable();
+            $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang chuan bi, 2 hoan thanh
             $table->timestamps();
         });
 
@@ -183,8 +149,6 @@ return new class extends Migration
         Schema::dropIfExists('position_actions');
         Schema::dropIfExists('positions');
         Schema::dropIfExists('staffs');
-        Schema::dropIfExists('principles');
-        Schema::dropIfExists('category_principles');
         Schema::dropIfExists('categories');
         Schema::dropIfExists('customers');
         Schema::dropIfExists('imports');

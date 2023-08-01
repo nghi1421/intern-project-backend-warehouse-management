@@ -20,8 +20,6 @@ class DemoSeeder extends Seeder
 
         $this->call(StaffSeeder::class);
 
-        $this->call(PrincipleSeeder::class);
-
         $this->call(CategorySeeder::class);
 
         $this->call(ProviderSeeder::class);

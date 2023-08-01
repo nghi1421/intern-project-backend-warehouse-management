@@ -14,17 +14,17 @@ class RoleSeeder extends Seeder
         $roles = [
             [
                 'id' => 1,
-                'name' => 'manager',
+                'name' => 'Nhan vien quan li',
                 'actionIds' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
             ],
             [
                 'id' => 2,
-                'name' => 'stocker',
+                'name' => 'Thu kho',
                 'actionIds' => [13, 14, 15, 16, 17, 18, 19, 20]
             ],
             [
                 'id' => 3,
-                'name' => 'warehouse-staff',
+                'name' => 'Nhan vien kho',
                 'actionIds' => [21, 22, 17, 11, 14, 15, 16,]
             ]
         ];

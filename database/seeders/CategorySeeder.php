@@ -54,32 +54,9 @@ class CategorySeeder extends Seeder
             ],
         ];
 
-        $principleIds = [1, 2, 3, 4, 5, 6, 7];
-
         foreach ($categories as $category) {
 
-            $newCategory = Category::query()->create($category);
-
-            $newCategory->principles()->attach(fake()->randomElements($principleIds));
-
-            // $numberOfPrinciple = fake()->numberBetween(0, 5);
-
-            // $categoryPrincipleIds = [];
-
-            // if ($numberOfPrinciple !== 0) {
-
-            //     foreach (range(0, $numberOfPrinciple) as $index) {
-
-            //         $principleId = fake()->randomElements($principleIds);
-
-            //         if (!in_array($principleId, $principleIds)) {
-
-            //             $categoryPrincipleIds[] = $principleId;
-            //         }
-            //     }
-
-            //     $newCategory->principles()->attach($categoryPrincipleIds);
-            // }
+            Category::query()->create($category);
         }
     }
 }
