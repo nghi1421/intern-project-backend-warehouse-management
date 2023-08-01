@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Provider;
+namespace App\Http\Requests\WarehouseBranch;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProvider extends FormRequest
+class CreateWarehouseBranch extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,8 +16,9 @@ class CreateProvider extends FormRequest
         return [
             'name' => [
                 'required',
+                'string',
                 'max:50',
-                'unique:providers,name'
+                'unique:warehouse_branches,name'
             ],
             'address' => [
                 'required',
@@ -29,6 +30,10 @@ class CreateProvider extends FormRequest
                 'regex:/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/',
                 'unique:providers,phone_number'
             ],
+            'opening' => [
+                'required',
+                'boolean',
+            ]
         ];
     }
 }

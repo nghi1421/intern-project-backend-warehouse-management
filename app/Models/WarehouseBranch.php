@@ -13,11 +13,15 @@ class WarehouseBranch extends Model
 
     protected $fillable = [
         'name',
-        'email',
         'address',
         'opening',
         'phone_number',
     ];
+
+    public function staffs(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
 
     public function imports(): HasMany
     {

@@ -20,7 +20,7 @@ class RoleSeeder extends Seeder
             [
                 'id' => 2,
                 'name' => 'Thu kho',
-                'actionIds' => [13, 14, 15, 16, 17, 18, 19, 20]
+                'actionIds' => [13, 14, 15, 16, 17, 18, 19, 20, 24]
             ],
             [
                 'id' => 3,

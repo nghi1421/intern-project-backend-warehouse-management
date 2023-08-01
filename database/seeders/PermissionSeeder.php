@@ -125,6 +125,11 @@ class PermissionSeeder extends Seeder
                 'name' => 'manage-branch-stock', //warehouse-staff
                 'description' => 'Can CRUD stock at warehouse branch user is working'
             ],
+            [
+                'id' => 24,
+                'name' => 'read-warehouse-branch',
+                'description' => 'Can read warehouse branches'
+            ]
         ];
 
         foreach ($permissions as $permission) {

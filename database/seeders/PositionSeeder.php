@@ -11,13 +11,16 @@ class PositionSeeder extends Seeder
     {
         $positions = [
             [
-                'name' => 'manager',
+                'id' => 1,
+                'name' => 'Quản lí',
             ],
             [
-                'name' => 'stocker',
+                'id' => 2,
+                'name' => 'Thủ kho',
             ],
             [
-                'name' => 'warehouse-staff',
+                'id' => 3,
+                'name' => 'Nhân viên kho',
             ]
         ];
 

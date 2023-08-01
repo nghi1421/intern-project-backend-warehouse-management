@@ -68,7 +68,7 @@ class StaffController extends Controller
     {
         $user = $request->user();
 
-        if ($user->can('manage-all-staff') || $user->can('manage-branch-staff')) {
+        if ($user->canAny(['manage-all-staff', 'manage-branch-staff'])) {
             try {
                 Staff::query()->create($request->validated());
             } catch (Exception $exception) {
@@ -132,7 +132,7 @@ class StaffController extends Controller
 
         $user = $request->user();
 
-        if ($user->can('manage-all-staff') || $user->can('manage-branch-staff')) {
+        if ($user->canAny(['manage-all-staff', 'manage-branch-staff'])) {
             if (
                 $user->can('manage-branch-staff')
                 && $staff->warehosue_branch_id !== $request->input('warehouse_branch_id')
@@ -168,7 +168,7 @@ class StaffController extends Controller
 
         $user = $request->user();
 
-        if ($user->can('manage-all-staff') || $user->can('manage-branch-staff')) {
+        if ($user->canAny(['manage-all-staff', 'manage-branch-staff'])) {
             if (
                 $user->can('manage-branch-staff')
                 && $staff->warehosue_branch_id !== $request->input('warehouse_branch_id')

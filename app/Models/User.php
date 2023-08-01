@@ -33,15 +33,6 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
-    public function hasRole(...$roles)
-    {
-        foreach ($roles as $role) {
-            if ($this->roles->contains('name', $role)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public function hasPermission(Permission $permission)
     {
