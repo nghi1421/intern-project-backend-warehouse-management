@@ -23,6 +23,7 @@ class Staff extends Model
         'address',
         'gender',
         'position_id',
+        'warehouse_branch_id',
         'user_id',
         'dob',
         'working',

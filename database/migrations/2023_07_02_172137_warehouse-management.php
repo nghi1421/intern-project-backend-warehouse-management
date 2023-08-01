@@ -59,6 +59,8 @@ return new class extends Migration
             $table->foreign('position_id')->references('id')->on('positions');
             $table->foreignId('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreignId('warehouse_branch_id')->nullable();
+            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->date('dob')->nullable();
             $table->boolean('working', true);
             $table->timestamps();
