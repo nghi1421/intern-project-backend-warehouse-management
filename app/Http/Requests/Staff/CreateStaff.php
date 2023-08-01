@@ -27,11 +27,6 @@ class CreateStaff extends FormRequest
                 'regex:/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/',
                 'unique:staffs,phone_number'
             ],
-            'avatar' => [
-                'sometimes',
-                'image',
-                File::types(['jpg', 'png', 'jpeg'])->max(1024 * 20),
-            ],
             'address' => [
                 'required',
                 'string',
@@ -43,8 +38,11 @@ class CreateStaff extends FormRequest
             ],
             'position_id' => [
                 'required',
-                'numeric',
                 'exists:positions,id'
+            ],
+            'warehouse_branch_id' => [
+                'sometimes',
+                'exists:warehouse_branches,id'
             ],
             'user_id' => [
                 'sometimes',

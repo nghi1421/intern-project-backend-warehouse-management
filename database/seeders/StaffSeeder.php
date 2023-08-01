@@ -102,6 +102,7 @@ class StaffSeeder extends Seeder
                 'address' => 'Quan 2',
                 'gender' => 1,
                 'position_id' => 3,
+                'warehouse_branch_id' => 2,
                 'dob' => '2003-04-01',
                 'working' => 1,
             ],

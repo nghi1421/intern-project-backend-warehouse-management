@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasUser;
-use App\Models\Enums\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +18,6 @@ class Staff extends Model
     protected $fillable = [
         'name',
         'phone_number',
-        'avatar',
         'address',
         'gender',
         'position_id',
