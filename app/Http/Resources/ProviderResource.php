@@ -13,7 +13,6 @@ class ProviderResource extends JsonResource
             'id' => $this->getKey(),
             'name' => $this->name,
             'address' => $this->address,
-            'email' => $this->email,
             'phone_number' => $this->phone_number,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
