@@ -7,75 +7,103 @@ use App\Models\Position;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PositionController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return new JsonResponse([
-            'positions' => Position::query()->select(['id', 'name'])->get(),
-            'pagination' => Position::query()->paginate(5)
-        ]);
+        $user = $request->user();
+
+        if ($user->canAny(['manage-position', 'read-position'])) {
+            return new JsonResponse([
+                'positions' => Position::query()->select(['id', 'name'])->get(),
+                'pagination' => Position::query()->paginate(5)
+            ]);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function show(Position $position): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
-        return new JsonResponse($position);
+        if ($request->user()->canAny(['manage-position', 'read-position'])) {
+            $position = Position::query()->findOrFail($id);
+
+            return new JsonResponse($position);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
     public function store(CreatePosition $request): JsonResponse
     {
-        try {
-            Position::query()->create($request->validated());
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
-
-        return new JsonResponse(['message' => 'Position created successfully.']);
-    }
-
-
-    public function update(Request $request, Position $position): JsonResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'unique.positions,name,' . $position->name]
-        ]);
-
-        try {
-            Position::query()->update($request->validated());
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
-
-        return new JsonResponse(['message' => 'Position updated successfully.']);
-    }
-
-
-    public function destroy(Position $position): JsonResponse
-    {
-        if ($position->staffs->count() > 0) {
-            return new JsonResponse([
-                'message' => 'Position is being used.',
-            ], 422);
-        }
-        try {
-            $result = Position::query()->delete();
-            if (!$result) {
+        if ($request->user()->can('manage-position')) {
+            try {
+                Position::query()->create($request->validated());
+            } catch (Exception $exception) {
                 return new JsonResponse([
-                    'message' => 'Deleting position failed.',
+                    'message' => $exception->getMessage(),
                 ], 422);
             }
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
 
-        return new JsonResponse(['message' => 'Position updated successfully.']);
+            return new JsonResponse(['message' => 'Position created successfully.']);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        if ($request->user()->can('manage-position')) {
+            $position = Position::query()->findOrFail($id);
+
+            $validated = Validator::make($request->all(), [
+                'name' => [
+                    'required',
+                    'string',
+                    Rule::unique('positions', 'name')->ignore($position)
+                ]
+            ])->validated();
+
+            try {
+                Position::query()->update($validated);
+            } catch (Exception $exception) {
+                return new JsonResponse([
+                    'message' => $exception->getMessage(),
+                ], 422);
+            }
+
+            return new JsonResponse(['message' => 'Position updated successfully.']);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+
+    public function destroy(string $id, Request $request): JsonResponse
+    {
+        if ($request->user()->can('manage-position')) {
+            $position = Position::query()->findOrFail($id);
+            if ($position->staffs->count() > 0) {
+                return new JsonResponse([
+                    'message' => 'Position is being used.',
+                ], 422);
+            }
+            try {
+                $result = Position::query()->delete();
+                if (!$result) {
+                    return new JsonResponse([
+                        'message' => 'Deleting position failed.',
+                    ], 422);
+                }
+            } catch (Exception $exception) {
+                return new JsonResponse([
+                    'message' => $exception->getMessage(),
+                ], 422);
+            }
+
+            return new JsonResponse(['message' => 'Position deleted successfully.']);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 }
