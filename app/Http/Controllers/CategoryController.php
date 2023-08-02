@@ -17,115 +17,134 @@ class CategoryController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection|Collection
     {
-        $request->validate([
-            'no_pagination' => ['nullable', 'boolean'],
-        ]);
+        $user = $request->user();
+        if ($user->canAny(['manage-category', 'read-category'])) {
+            $request->validate([
+                'no_pagination' => ['nullable', 'boolean'],
+            ]);
 
-        if ($request->input('no_pagination')) {
-            return Category::query()->select('id', 'name', 'unit')->get();
+            if ($request->input('no_pagination')) {
+                return Category::query()->select('id', 'name', 'unit')->get();
+            }
+
+            return CategoryResource::collection(Category::query()->paginate(5));
         }
 
-        return CategoryResource::collection(Category::query()->paginate(5));
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
-        $category = Category::query()->find($id);
+        $user = $request->user();
 
-        if (!$category) {
-            return new JsonResponse([
-                'message' => 'Category not found',
-            ], 404);
+        if ($user->can('manage-category')) {
+            $category = Category::query()->findOrFail($id);
+
+            return new JsonResponse(new CategoryResource($category));
         }
 
-        return new JsonResponse(new CategoryResource($category));
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
     public function store(CreateCategory $request): JsonResponse
     {
-        try {
-            Category::query()->create($request->validated());
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
+        $user = $request->user();
 
-        return new JsonResponse([
-            'message' => 'Create category successfully'
-        ]);
-    }
-
-    public function update(Request $request, string $id)
-    {
-        $category = Category::query()->find($id);
-
-        if (!$category) {
-            return new JsonResponse([
-                'message' => 'Category not found',
-            ], 404);
-        }
-
-        $validated = Validator::make($request->all(), [
-            'name' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('categories', 'name')->ignore($category),
-            ],
-            'description' => [
-                'required',
-                'string',
-                'max:255'
-            ],
-            'unit' => [
-                'required',
-                'string',
-                'max:20'
-            ],
-        ])->validate();
-
-        try {
-            if (!$category->update($validated)) {
+        if ($user->can('manage-category')) {
+            try {
+                Category::query()->create($request->validated());
+            } catch (Exception $exception) {
                 return new JsonResponse([
-                    'message' => 'Update Category failed',
+                    'message' => $exception->getMessage(),
                 ], 422);
             }
-        } catch (Exception $exception) {
+
             return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
+                'message' => 'Create category successfully'
+            ]);
         }
 
-        return new JsonResponse(['message' => 'Category successfully updated.']);
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function destroy(Category $category)
+    public function update(Request $request, string $id): JsonResponse
     {
-        if ($category->imports->count() > 0) {
-            return new JsonResponse([
-                'message' => 'Could not delete category, created import',
-            ], 422);
-        }
+        $user = $request->user();
 
-        if ($category->exports->count() > 0) {
-            return new JsonResponse([
-                'message' => 'Could not delete category, created export',
-            ], 422);
-        }
+        if ($user->can('manage-category')) {
+            $category = Category::query()->findOrFail($id);
 
-        try {
-            if (!$category->delete()) {
+            $validated = Validator::make($request->all(), [
+                'name' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    Rule::unique('categories', 'name')->ignore($category),
+                ],
+                'description' => [
+                    'required',
+                    'string',
+                    'max:255'
+                ],
+                'unit' => [
+                    'required',
+                    'string',
+                    'max:20'
+                ],
+            ])->validate();
+
+            try {
+                if (!$category->update($validated)) {
+                    return new JsonResponse([
+                        'message' => 'Update Category failed',
+                    ], 422);
+                }
+            } catch (Exception $exception) {
                 return new JsonResponse([
-                    'message' => 'Delete category failed',
+                    'message' => $exception->getMessage(),
                 ], 422);
             }
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
+
+            return new JsonResponse(['message' => 'Category successfully updated.']);
         }
 
-        return new JsonResponse(['message' => 'Category successfully deleted.']);
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    public function destroy(string $id, Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->can('manage-category')) {
+            $category = Category::query()->findOrFail($id);
+
+            if ($category->imports->count() > 0) {
+                return new JsonResponse([
+                    'message' => 'Could not delete category, created import',
+                ], 422);
+            }
+
+            if ($category->exports->count() > 0) {
+                return new JsonResponse([
+                    'message' => 'Could not delete category, created export',
+                ], 422);
+            }
+
+            try {
+                if (!$category->delete()) {
+                    return new JsonResponse([
+                        'message' => 'Delete category failed',
+                    ], 422);
+                }
+            } catch (Exception $exception) {
+                return new JsonResponse([
+                    'message' => $exception->getMessage(),
+                ], 422);
+            }
+
+            return new JsonResponse(['message' => 'Category successfully deleted.']);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 }

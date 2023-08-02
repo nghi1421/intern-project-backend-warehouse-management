@@ -14,7 +14,6 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'unit' => $this->unit,
             'description' => $this->description,
-            'principles' => $this->principles,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

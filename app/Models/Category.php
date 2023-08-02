@@ -18,24 +18,25 @@ class Category extends Model
         'description'
     ];
 
-    public static function boot()
-    {
-        parent::boot();
+    //For future developlent
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        static::deleting(function (Category $category) {
-            $principles = $category->principles;
+    //     static::deleting(function (Category $category) {
+    //         $principles = $category->principles;
 
-            if ($principles->isNotEmpty()) {
+    //         if ($principles->isNotEmpty()) {
 
-                $category->principles()->detach();
-            }
-        });
-    }
+    //             $category->principles()->detach();
+    //         }
+    //     });
+    // }
 
-    public function principles(): BelongsToMany
-    {
-        return $this->belongsToMany(Principle::class, 'category_principles');
-    }
+    // public function principles(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Principle::class, 'category_principles');
+    // }
 
     public function imports(): BelongsToMany
     {
