@@ -129,6 +129,11 @@ class PermissionSeeder extends Seeder
                 'id' => 24,
                 'name' => 'read-warehouse-branch',
                 'description' => 'Can read warehouse branches'
+            ],
+            [
+                'id' => 25,
+                'name' => 'read-position',
+                'description' => 'Can read positions'
             ]
         ];
 
