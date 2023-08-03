@@ -112,12 +112,12 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 21,
-                'name' => 'manage-branch-import', //warehouse-staff
+                'name' => 'manage-import',
                 'description' => 'Can CRUD import at warehouse branch user is working'
             ],
             [
                 'id' => 22,
-                'name' => 'manage-branch-export', //warehouse-staff
+                'name' => 'manage-export',
                 'description' => 'Can CRUD export at warehouse branch user is working'
             ],
             [
@@ -134,6 +134,16 @@ class PermissionSeeder extends Seeder
                 'id' => 25,
                 'name' => 'read-position',
                 'description' => 'Can read positions'
+            ],
+            [
+                'id' => 26,
+                'name' => 'update-import-status',
+                'description' => 'Can update status of import'
+            ],
+            [
+                'id' => 27,
+                'name' => 'update-export-status',
+                'description' => 'Can update status of export'
             ]
         ];
 

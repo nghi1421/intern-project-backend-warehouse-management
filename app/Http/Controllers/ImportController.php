@@ -8,13 +8,17 @@ use App\Http\Resources\ImportResource;
 use App\Models\Import;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ImportController extends Controller
 {
-    public function index(): ImportCollection
+    public function index(Request $request): ImportCollection|JsonResponse
     {
-        return new ImportCollection(Import::query()->paginate(5));
+        if ($request->user()->can('manage-import')) {
+            return new ImportCollection(Import::query()->paginate(5));
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
     public function store(CreateImport $request): JsonResponse
