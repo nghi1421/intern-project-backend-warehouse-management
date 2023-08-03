@@ -6,6 +6,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseBranchController;
 use Illuminate\Http\JsonResponse;
@@ -32,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('imports', ImportController::class);
 
     Route::resource('providers', ProviderController::class);
+
+    Route::resource('stocks', StockController::class);
 });
 
 
