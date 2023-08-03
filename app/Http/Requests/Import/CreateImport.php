@@ -16,8 +16,9 @@ class CreateImport extends FormRequest
     {
         return [
             'staff_id' => ['required', 'exists:staffs,id'],
-            'status' => ['required', Rule::in(0, 1, 2)],
+            'status' => ['required', Rule::in(0, 1, 2, 3)],
             'provider_id' => ['required', 'exists:providers,id'],
+            'warehouse_branch_id' => ['required', 'exists:warehouse_branches,id'],
             'categories' => ['required', 'array', 'min:1'],
             'categories.*' => ['required', 'numeric', 'exists:categories,id'],
             'amounts' => ['required', 'array', 'min:1'],

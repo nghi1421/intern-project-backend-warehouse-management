@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Import\CreateImport;
+use App\Http\Requests\Import\UpdateImport;
 use App\Http\Resources\ImportCollection;
 use App\Http\Resources\ImportResource;
 use App\Models\Import;
+use App\Models\Staff;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,128 +17,166 @@ class ImportController extends Controller
 {
     public function index(Request $request): ImportCollection|JsonResponse
     {
-        if ($request->user()->can('manage-import')) {
+        $user = $request->user();
+
+        if ($user->can('manage-import')) {
             return new ImportCollection(Import::query()->paginate(5));
         }
+
+        if ($user->can('read-branch-import')) {
+            $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
+            $imports = Import::query()->where('warehouse_branch_id', $staff->warehouse_branch_id)->paginate(5);
+
+            return new ImportCollection($imports);
+        }
+
         return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
     public function store(CreateImport $request): JsonResponse
     {
-        try {
-            DB::beginTransaction();
+        if ($request->user()->can('manage-import')) {
+            if ($request->input('status') === 1) {
+                try {
+                    DB::beginTransaction();
 
-            $categories = $request->input('categories');
+                    $categories = $request->input('categories');
 
-            $amounts = $request->input('amounts');
+                    $amounts = $request->input('amounts');
 
-            $unitPrices = $request->input('unit_prices');
+                    $unitPrices = $request->input('unit_prices');
 
-            $importDetails = array_map(fn ($value, $index) => [
-                'quantity' => $value,
-                'unit_price' => $unitPrices[$index]
-            ], $amounts, array_keys($amounts));
+                    $importDetails = array_map(fn ($value, $index) => [
+                        'quantity' => $value,
+                        'unit_price' => $unitPrices[$index]
+                    ], $amounts, array_keys($amounts));
 
-            $importDetails = array_combine($categories, $importDetails);
+                    $importDetails = array_combine($categories, $importDetails);
 
-            $newImport = Import::query()->create($request->validated());
+                    $newImport = Import::query()->create($request->validated());
 
-            $newImport->categories()->sync($importDetails);
+                    $newImport->categories()->sync($importDetails);
 
-            DB::commit();
-        } catch (Exception $exception) {
-            DB::rollback();
+                    DB::commit();
+                } catch (Exception $exception) {
+                    DB::rollback();
 
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
+                    return new JsonResponse([
+                        'message' => $exception->getMessage(),
+                    ], 422);
+                }
 
-        return new JsonResponse([
-            'message' => 'Create import successfully'
-        ]);
-    }
-
-    public function show(string $id): JsonResponse
-    {
-        $import =  Import::query()->find($id);
-
-        if (!$import) {
-            return new JsonResponse([
-                'message' => 'Import not found',
-            ], 404);
-        }
-
-        return new JsonResponse(new ImportResource($import));
-    }
-
-    public function update(CreateImport $request, string $id)
-    {
-        $import =  Import::query()->find($id);
-
-        if (!$import) {
-            return new JsonResponse([
-                'message' => 'Import not found',
-            ], 404);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $categories = $request->input('categories');
-
-            $amounts = $request->input('amounts');
-
-            $unitPrices = $request->input('unit_prices');
-
-            $importDetails = array_map(fn ($value, $index) => [
-                'quantity' => $value,
-                'unit_price' => $unitPrices[$index]
-            ], $amounts, array_keys($amounts));
-
-            $importDetails = array_combine($categories, $importDetails);
-
-            $import->categories()->sync($importDetails);
-
-            DB::commit();
-        } catch (Exception $exception) {
-            DB::rollback();
-
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
-
-        return new JsonResponse([
-            'message' => 'Update import successfully'
-        ]);
-    }
-
-
-    public function destroy(string $id)
-    {
-        $import =  Import::query()->find($id);
-
-        if (!$import) {
-            return new JsonResponse([
-                'message' => 'Import not found',
-            ], 404);
-        }
-
-        try {
-            if (!$import->delete()) {
                 return new JsonResponse([
-                    'message' => 'Delete import failed',
+                    'message' => 'Create import successfully'
+                ]);
+            }
+
+            return new JsonResponse([
+                'message' => 'Status creating import muse be initial import'
+            ], 422);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    public function show(string $id, Request $request): JsonResponse
+    {
+        if ($request->user()->canAny(['manage-import', 'read-branch-import'])) {
+            $import =  Import::query()->findOrFail($id);
+
+            return new JsonResponse(new ImportResource($import));
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    public function update(UpdateImport $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+
+        $import =  Import::query()->findOrFail($id);
+
+        if ($import->status === 3) {
+            return new JsonResponse(['message' => 'Import is done. Could not']);
+        }
+
+        if ($user->can('update-import-status')) {
+            if ($import->status === 1 && $request->input('status') === 2) {
+                $import->update(['status' => 2]);
+
+                return new JsonResponse(['message' => 'Switch to checking status successfully.']);
+            }
+
+            if ($import->status === 2 && $request->input('status') === 3) {
+                $import->update(['status' => 3]);
+                return new JsonResponse(['message' => 'Import completed successfully.']);
+            }
+
+            return new JsonResponse(['message' => 'You do not have permission to do this action.']);
+        }
+        if ($user->can('manage-import')) {
+
+            if ($import->status === 3) {
+                return new JsonResponse(['message' => 'Import is done. Could not']);
+            }
+
+            try {
+                DB::beginTransaction();
+
+                $categories = $request->input('categories');
+
+                $amounts = $request->input('amounts');
+
+                $unitPrices = $request->input('unit_prices');
+
+                $importDetails = array_map(fn ($value, $index) => [
+                    'quantity' => $value,
+                    'unit_price' => $unitPrices[$index]
+                ], $amounts, array_keys($amounts));
+
+                $importDetails = array_combine($categories, $importDetails);
+
+                $import->categories()->sync($importDetails);
+
+                DB::commit();
+            } catch (Exception $exception) {
+                DB::rollback();
+
+                return new JsonResponse([
+                    'message' => $exception->getMessage(),
                 ], 422);
             }
-        } catch (Exception $exception) {
-            return new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-        }
 
-        return new JsonResponse([
-            'message' => 'Delete import successfully'
-        ]);
+            return new JsonResponse([
+                'message' => 'Update import successfully'
+            ]);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+
+    public function destroy(string $id, Request $request): JsonResponse
+    {
+        if ($request->user()->can(['manage-import'])) {
+            $import =  Import::query()->findOrFail($id);
+            if ($import->status !== 1) {
+                return new JsonResponse(['message' => 'Only delete initial import.'], 403);
+            }
+            try {
+                if (!$import->delete()) {
+                    return new JsonResponse([
+                        'message' => 'Delete import failed',
+                    ], 422);
+                }
+            } catch (Exception $exception) {
+                return new JsonResponse([
+                    'message' => $exception->getMessage(),
+                ], 422);
+            }
+
+            return new JsonResponse([
+                'message' => 'Delete import successfully'
+            ]);
+        }
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 }

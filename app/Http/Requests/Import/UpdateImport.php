@@ -15,15 +15,14 @@ class UpdateImport extends FormRequest
     public function rules(): array
     {
         return [
-            'staff_id' => ['required', 'exists:staffs,id'],
-            'status' => ['required', Rule::in(0, 1, 2)],
-            'provider_id' => ['required', 'exists:providers,id'],
-            'categories' => ['required', 'array', 'min:1'],
-            'categories.*' => ['required', 'numeric', 'exists:categories,id'],
-            'amounts' => ['required', 'array', 'min:1'],
-            'amounts.*' => ['required', 'numeric', 'min:1'],
-            'unit_prices' => ['required', 'array', 'min:1'],
-            'unit_prices.*' => ['required', 'numeric', 'min:1'],
+            'status' => ['required', Rule::in(0, 1, 2, 3)],
+            'provider_id' => ['sometimes', 'exists:providers,id'],
+            'categories' => ['sometimes', 'array', 'min:1'],
+            'categories.*' => ['sometimes', 'numeric', 'exists:categories,id'],
+            'amounts' => ['sometimes', 'array', 'min:1'],
+            'amounts.*' => ['sometimes', 'numeric', 'min:1'],
+            'unit_prices' => ['sometimes', 'array', 'min:1'],
+            'unit_prices.*' => ['sometimes', 'numeric', 'min:1'],
         ];
     }
 }
