@@ -9,7 +9,6 @@ use App\Models\Staff;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class LocationController extends Controller
@@ -78,7 +77,7 @@ class LocationController extends Controller
         $location = Location::query()->findOrFail($id);
 
         if ($user->canAny(['manage-branch-location', 'read-location'])) {
-            $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
+            $staff = Staff::query()->where('name', $user->getKey())->firstOrFail();
 
             if ($staff->warehouse_branch_id !== $location->warehouse_branch_id) {
                 return new JsonResponse(['message' => 'You do have access to do this action.'], 403);
@@ -98,38 +97,33 @@ class LocationController extends Controller
     {
         $user = $request->user();
         $location = Location::query()->findOrFail($id);
-
-        $validated = Validator::make($request->all(), [
+        $request->validate([
             'name' => [
-                'required',
-                'string',
+                'sometimes',
                 'max:50'
             ],
-            'warehouse_branch_id' => [
-                'required',
-                'exists:warehoure_branches,id',
-                Rule::unique('locations', 'warehouse_branch_id')
-                    ->where('user_id', $this->input('name'))
-                    ->ignore($location),
-            ],
-            'description' => ['required', 'max:255'],
-        ])->validated();
+            'description' => ['sometimes', 'max:255'],
+        ]);
+
+        if ($this->checkUniqueLocation($request->input('name'), $location->warehouse_branch_id)) {
+            return new JsonResponse(['message' => 'Location name has existed at this warehouse branch.'], 422);
+        }
 
         if ($user->can('manage-branch-location')) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
 
-            if ($staff->warehouse_branch_id !== $request->input('warehouse_branch_id')) {
+            if ($staff->warehouse_branch_id !== $location->warehouse_branch_id) {
                 return new JsonResponse(['message' => 'You do have access to do this action.'], 403);
             }
 
-            if (!$location->update($validated)) {
+            if (!$location->update($request->toArray())) {
                 return new JsonResponse(['message' => 'Updating location failed.'], 422);
             }
             return new JsonResponse(['message' => 'Location updated successfully.']);
         }
 
         if ($user->can('manage-location')) {
-            if (!$location->update($validated)) {
+            if (!$location->update($request->toArray())) {
                 return new JsonResponse(['message' => 'Updating location failed.'], 422);
             }
             return new JsonResponse(['message' => 'Location updated successfully.']);
@@ -174,5 +168,13 @@ class LocationController extends Controller
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    protected function checkUniqueLocation(string $name, int $warehouseBranchId): bool
+    {
+        return (bool) Location::query()
+            ->where('warehouse_branch_id', $warehouseBranchId)
+            ->where('name', $name)
+            ->first();
     }
 }
