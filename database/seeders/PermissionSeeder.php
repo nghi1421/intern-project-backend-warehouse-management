@@ -62,7 +62,7 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 11,
-                'name' => 'read-location',
+                'name' => 'read-branch-location',
                 'description' => 'Can read location'
             ],
             [
@@ -144,7 +144,17 @@ class PermissionSeeder extends Seeder
                 'id' => 27,
                 'name' => 'update-export-status',
                 'description' => 'Can update status of export'
-            ]
+            ],
+            [
+                'id' => 28,
+                'name' => 'manage-location',
+                'description' => 'Can read location'
+            ],
+            [
+                'id' => 29,
+                'name' => 'manage-branch-location',
+                'description' => 'Can read branch location'
+            ],
         ];
 
         foreach ($permissions as $permission) {

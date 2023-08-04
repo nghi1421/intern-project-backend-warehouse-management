@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\StaffController;
@@ -35,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('providers', ProviderController::class);
 
     Route::resource('stocks', StockController::class);
+
+    Route::resource('locations', LocationController::class);
 });
 
 
