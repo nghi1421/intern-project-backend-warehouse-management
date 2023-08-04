@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Location extends Model
 {
@@ -13,21 +12,12 @@ class Location extends Model
 
     protected $fillable = [
         'description',
-        'shelf_name',
-        'block_name',
+        'name',
+        'warehouse_branch_id',
     ];
 
-    public function goods(): HasMany
+    public function warehouseBranch(): BelongsTo
     {
-        return $this->hasMany(Goods::class);
-    }
-
-    public function numberOfGoods(): Attribute
-    {
-        return Attribute::make(
-            get: function (): array {
-                return $this->withCount('goods');
-            }
-        );
+        return $this->belongsTo(WarehouseBranch::class);
     }
 }

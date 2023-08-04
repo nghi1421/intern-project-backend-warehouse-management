@@ -88,7 +88,7 @@ return new class extends Migration
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->unique(['name', 'warehouse_branch_id']);
-            $table->string('descrption', 255);
+            $table->string('description', 255);
             $table->timestamps();
         });
 

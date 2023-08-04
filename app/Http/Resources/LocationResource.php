@@ -14,7 +14,7 @@ class LocationResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'warehouse_branch_id' => $this->warehouse_branch_id,
-            'warehoues_name' => $this->warehoues->namespace,
+            'warehouse_branch_name' => $this->warehouseBranch->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

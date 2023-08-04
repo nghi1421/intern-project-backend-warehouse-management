@@ -22,9 +22,9 @@ class CreateLocation extends FormRequest
             ],
             'warehouse_branch_id' => [
                 'required',
-                'exists:warehoure_branches,id',
+                'exists:warehouse_branches,id',
                 Rule::unique('locations', 'warehouse_branch_id')
-                    ->where('user_id', $this->input('name')),
+                    ->where('name', $this->input('name')),
             ],
             'description' => ['required', 'max:255'],
         ];
