@@ -69,7 +69,7 @@ class ProviderController extends Controller
     {
         $user = $request->user();
 
-        if ($user->can('manage-provide')) {
+        if ($user->can('manage-provider')) {
             $provider = Provider::query()->findOrFail($id);
 
             $validated = Validator::make($request->all(), [
@@ -108,7 +108,7 @@ class ProviderController extends Controller
     {
         $user = $request->user();
 
-        if ($user->can('manage-provide')) {
+        if ($user->can('manage-provider')) {
             $provider = Provider::query()->findOrFail($id);
 
             if ($provider->imports->count() > 0) {
