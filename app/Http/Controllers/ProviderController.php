@@ -38,7 +38,7 @@ class ProviderController extends Controller
     {
         $user = $request->user();
 
-        if ($user->can('manage-provide')) {
+        if ($user->can('manage-provider')) {
             try {
                 Provider::query()->create($request->validated());
             } catch (Exception $exception) {
