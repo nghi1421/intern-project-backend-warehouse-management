@@ -149,7 +149,7 @@ class WarehouseBranchController extends Controller
                 ], 422);
             }
             try {
-                if ($warehouseBranch->delete()) {
+                if (!$warehouseBranch->delete()) {
                     return new JsonResponse([
                         'message' => 'Warehouse branch delete failed'
                     ], 422);
