@@ -3,29 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WarehouseBranch\CreateWarehouseBranch;
+use App\Http\Resources\WarehouseBranchResource;
 use App\Models\WarehouseBranch;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class WarehouseBranchController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
         $user = $request->user();
 
         if ($user->canAny(['manage-warehouse-branch', 'read-warehouse-branch'])) {
-            return new JsonResponse([
-                'pagination' => WarehouseBranch::query()->where('opening', 1)->paginate(5),
-                'warehouse_branches' => WarehouseBranch::query()->where('opening', 1)->get(),
+            $request->validate([
+                'no_pagination' => ['nullable', 'boolean'],
             ]);
+
+            if ($request->input('no_pagination')) {
+                return WarehouseBranchResource::collection(WarehouseBranch::query()->get());
+            }
+
+            return WarehouseBranchResource::collection(WarehouseBranch::query()->paginate(5));
         }
 
-        return new JsonResponse([
-            'message' => 'Forbidden',
-        ], 403);
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
 
