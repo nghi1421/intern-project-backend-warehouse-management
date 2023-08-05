@@ -40,11 +40,11 @@ class WarehouseBranchController extends Controller
 
         if ($user->can('manage-warehouse-branch')) {
             try {
-                WarehouseBranch::query()->created($request->validated());
+                WarehouseBranch::query()->create($request->validated());
             } catch (Exception $exception) {
                 return new JsonResponse([
                     'message' => $exception->getMessage(),
-                ]);
+                ], 422);
             }
 
             return new JsonResponse([
