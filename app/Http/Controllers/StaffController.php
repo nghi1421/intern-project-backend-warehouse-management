@@ -37,7 +37,7 @@ class StaffController extends Controller
         ], 403);
     }
 
-    public function show(string $id, Request $request): JsonResponse
+    public function show(string $id, Request $request): JsonResponse|StaffResource
     {
         $user = $request->user();
 
