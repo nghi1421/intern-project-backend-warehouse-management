@@ -105,7 +105,7 @@ class LocationController extends Controller
             'description' => ['sometimes', 'max:255'],
         ]);
 
-        if ($this->checkUniqueLocation($request->input('name'), $location->warehouse_branch_id)) {
+        if ($this->checkUniqueLocation($request->input('name'), $location->warehouse_branch_id, $id)) {
             return new JsonResponse(['message' => 'Location name has existed at this warehouse branch.'], 422);
         }
 
@@ -170,9 +170,13 @@ class LocationController extends Controller
         return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    protected function checkUniqueLocation(string $name, int $warehouseBranchId): bool
-    {
+    protected function checkUniqueLocation(
+        string $name,
+        int $warehouseBranchId,
+        string $locationId
+    ): bool {
         return (bool) Location::query()
+            ->whereNot('id', $locationId)
             ->where('warehouse_branch_id', $warehouseBranchId)
             ->where('name', $name)
             ->first();
