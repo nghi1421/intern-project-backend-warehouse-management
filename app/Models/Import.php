@@ -69,7 +69,7 @@ class Import extends Model
         });
     }
 
-    public function warehouserBranch(): BelongsTo
+    public function warehouseBranch(): BelongsTo
     {
         return $this->belongsTo(WarehouseBranch::class);
     }
