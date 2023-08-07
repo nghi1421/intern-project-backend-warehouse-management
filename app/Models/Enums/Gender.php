@@ -16,11 +16,11 @@ enum Gender: int
 
             default => null,
 
-            self::Female => __('Female'),
+            self::Female => __('Nữ'),
 
-            self::Male => __('Male'),
+            self::Male => __('Nam'),
 
-            self::Other => __('Other'),
+            self::Other => __('Khác'),
         };
     }
 }

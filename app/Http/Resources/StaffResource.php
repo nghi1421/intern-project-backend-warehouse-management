@@ -24,7 +24,7 @@ class StaffResource extends JsonResource
             'gender' => Gender::tryFrom($this->gender)->label(),
             'dob' => $this->dob,
             'working' => $this->working,
-            'status' => WorkingStatus::tryFrom($this->working)->label(),
+            'status' => $this->working ? 'Đang làm việc' : 'Nghỉ việc',
         ];
     }
 }
