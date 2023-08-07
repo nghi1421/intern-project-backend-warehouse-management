@@ -42,9 +42,19 @@ class AuthController extends Controller
         return new JsonResponse(data: [
             'staff_information' => $staff,
             'role' => $user->role->name,
+            'permissions' => $user->role->permissions->toArray(),
             'token' => $token,
             'message' => 'Login successfully',
         ]);
+    }
+
+    public function getPermisson(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $permissions = $user->role->permissions->toArray();
+
+        return new JsonResponse($permissions);
     }
 
     public function logout(Request $request): JsonResponse
