@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Enums\Gender;
-use App\Models\Enums\WorkingStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +20,7 @@ class StaffResource extends JsonResource
             'warehouse_branch' => $this->branch,
             'phone_number' => $this->phone_number,
             'address' => $this->address,
+            'gender_id' => $this->gender,
             'gender' => Gender::tryFrom($this->gender)->label(),
             'dob' => $this->dob,
             'working' => $this->working,

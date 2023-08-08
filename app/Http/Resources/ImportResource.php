@@ -29,6 +29,7 @@ class ImportResource extends JsonResource
             'warehouse_branch_id' => $this->warehouse_branch_id,
             'warehouse_branch_name' => $this->warehouseBranch->name,
             'categories' => $categories,
+            'status_id' => $this->status,
             'provider' => $this->provider,
             'status' => ImportStatus::tryFrom($this->status)->label(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
