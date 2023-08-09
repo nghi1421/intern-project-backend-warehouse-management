@@ -11,16 +11,16 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->call(function () {
-            $exports = Export::query()->whereNotIn('status', [0, 2])->get();
+        // $schedule->call(function () {
+        //     $exports = Export::query()->whereNotIn('status', [0, 2])->get();
 
-            foreach ($exports as $export) {
-                if ($export->create_at->diff(Carbon::now())->format('%a') > 0) {
-                    $export->status = 0;
-                    $export->update();
-                }
-            }
-        })->everyThirtyMinutes();
+        //     foreach ($exports as $export) {
+        //         if ($export->create_at->diff(Carbon::now())->format('%a') > 0) {
+        //             $export->status = 0;
+        //             $export->update();
+        //         }
+        //     }
+        // })->everyThirtyMinutes();
     }
 
 

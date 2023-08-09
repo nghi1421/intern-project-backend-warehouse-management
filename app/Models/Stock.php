@@ -12,6 +12,7 @@ class Stock extends Model
 
     protected $fillable = [
         'import_id',
+        'export_id',
         'category_id',
         'location_id',
         'expiry_date',
