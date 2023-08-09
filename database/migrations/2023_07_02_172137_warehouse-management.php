@@ -116,6 +116,13 @@ return new class extends Migration
 
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
+            // // 1 as soon as possible
+            // // 2 in 6 hours
+            // // 3 in 12 hours
+            // // 4 in 1 day
+            // // 5 in 3 day
+            // // 6 in a week
+            // $table->tinyInteger('time_status')->default(1);
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
