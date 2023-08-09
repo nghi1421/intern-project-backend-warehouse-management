@@ -9,3 +9,5 @@ Route::get('/', function () {
 });
 
 Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
+
+Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
