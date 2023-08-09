@@ -138,7 +138,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('import_id');
             $table->foreign('import_id')->references('id')->on('imports');
-            $table->unsignedBigInteger('export_id');
+            $table->unsignedBigInteger('export_id')->nullable();
             $table->foreign('export_id')->references('id')->on('exports');
             $table->foreignId('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
