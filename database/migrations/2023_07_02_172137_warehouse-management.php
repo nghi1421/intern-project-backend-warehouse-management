@@ -120,7 +120,6 @@ return new class extends Migration
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->text('stocks')->nullable();
             $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang chuan bi, 2 hoan thanh
             $table->timestamps();
         });

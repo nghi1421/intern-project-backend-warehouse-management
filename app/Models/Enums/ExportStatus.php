@@ -4,11 +4,13 @@ namespace App\Models\Enums;
 
 enum ExportStatus: int
 {
-    case Canceled = 0;
+    case NotComplete = 0;
 
-    case InProgress = 1;
+    case Initial = 1;
 
-    case Completed = 2;
+    case Packing = 2;
+
+    case Completed = 3;
 
     public function label(): string|null
     {
@@ -16,11 +18,13 @@ enum ExportStatus: int
 
             default => null,
 
-            self::Canceled => __('Cancel'),
+            self::NotComplete => __('Không hoàn thành'),
 
-            self::InProgress => __('In Progress'),
+            self::Initial => __('Khởi tạo'),
 
-            self::Completed => __('Completed'),
+            self::Packing => __('Đang đóng gói'),
+
+            self::Completed => __('Hoàn thành'),
         };
     }
 }

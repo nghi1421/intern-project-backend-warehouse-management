@@ -17,7 +17,6 @@ class Export extends Model
         'staff_id',
         'status',
         'warehouse_branch_id',
-        'stocks'
     ];
 
     public function warehouserBranch(): BelongsTo
