@@ -155,6 +155,11 @@ class PermissionSeeder extends Seeder
                 'name' => 'manage-branch-location',
                 'description' => 'Can read branch location'
             ],
+            [
+                'id' => 30,
+                'name' => 'cancel-import',
+                'description' => 'Cacel import'
+            ]
         ];
 
         foreach ($permissions as $permission) {

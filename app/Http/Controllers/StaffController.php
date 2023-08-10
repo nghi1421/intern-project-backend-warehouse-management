@@ -169,6 +169,14 @@ class StaffController extends Controller
         $user = $request->user();
 
         if ($user->canAny(['manage-all-staff', 'manage-branch-staff'])) {
+            $staffInformation = Staff::query()->where('user_id', $user->getkey())->firstOrFail();
+
+            if ($staffInformation->getKey() == $id) {
+                return new JsonResponse([
+                    'message' => 'Could not delete your staff information.'
+                ], 422);
+            }
+
             if (
                 $user->can('manage-branch-staff')
                 && $staff->warehosue_branch_id !== $request->input('warehouse_branch_id')

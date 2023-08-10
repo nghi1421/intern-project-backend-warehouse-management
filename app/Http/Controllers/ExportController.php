@@ -88,16 +88,13 @@ class ExportController extends Controller
         if ($user->can('update-export-status')) {
             if ($export->status === 1 && $request->input('status') === 2) {
                 $export->update(['status' => 2]);
-
                 return new JsonResponse(['message' => 'Switch to checking status successfully.']);
-            }
-
-            if ($export->status === 2 && $request->input('status') === 3) {
+            } else if ($export->status === 2 && $request->input('status') === 3) {
                 $export->update(['status' => 3]);
                 return new JsonResponse(['message' => 'Export completed successfully.']);
+            } else {
+                return new JsonResponse(['message' => 'You do not have permission to do this action.']);
             }
-
-            return new JsonResponse(['message' => 'You do not have permission to do this action.']);
         }
         if ($user->can('manage-export')) {
 

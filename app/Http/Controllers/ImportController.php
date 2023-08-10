@@ -99,19 +99,26 @@ class ImportController extends Controller
             return new JsonResponse(['message' => 'Import is done. Could not']);
         }
 
+        if ($user->can('cancel-import')) {
+            if ($import->status === 1 && $request->input('status') === 0) {
+                $import->update(['status' => 0]);
+                return new JsonResponse(['message' => 'Import cancel successfully.']);
+            } else {
+                return new JsonResponse(['message' => 'Could not cancel import.']);
+            }
+        }
+
         if ($user->can('update-import-status')) {
+
             if ($import->status === 1 && $request->input('status') === 2) {
                 $import->update(['status' => 2]);
-
                 return new JsonResponse(['message' => 'Switch to checking status successfully.']);
-            }
-
-            if ($import->status === 2 && $request->input('status') === 3) {
+            } else if ($import->status === 2 && $request->input('status') === 3) {
                 $import->update(['status' => 3]);
                 return new JsonResponse(['message' => 'Import completed successfully.']);
+            } else {
+                return new JsonResponse(['message' => 'You do not have permission to do this action.']);
             }
-
-            return new JsonResponse(['message' => 'You do not have permission to do this action.']);
         }
         if ($user->can('manage-import')) {
 
