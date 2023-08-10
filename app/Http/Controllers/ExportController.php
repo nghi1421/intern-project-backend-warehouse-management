@@ -58,7 +58,7 @@ class ExportController extends Controller
             }
 
             return new JsonResponse([
-                'message' => 'Status creating export muse be initial import'
+                'message' => 'Status creating export muse be initial import.'
             ], 422);
         }
 
@@ -105,10 +105,6 @@ class ExportController extends Controller
                 return new JsonResponse(['message' => 'Export is done. Could not update import']);
             }
 
-            if ($export->status === 3) {
-                return new JsonResponse(['message' => 'Export is not complete in time. Could not update import']);
-            }
-
             $categories = $request->input('categories');
 
             $amounts = $request->input('amounts');
@@ -122,7 +118,7 @@ class ExportController extends Controller
             $export->categories()->sync($exportDetails);
 
             return new JsonResponse([
-                'message' => 'Create export successfully'
+                'message' => 'Update export successfully'
             ]);
         }
         return new JsonResponse(['message' => 'Forbidden'], 403);
