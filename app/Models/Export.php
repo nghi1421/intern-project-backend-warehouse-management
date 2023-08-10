@@ -19,7 +19,7 @@ class Export extends Model
         'warehouse_branch_id',
     ];
 
-    public function warehouserBranch(): BelongsTo
+    public function warehouseBranch(): BelongsTo
     {
         return $this->belongsTo(WarehouseBranch::class);
     }
