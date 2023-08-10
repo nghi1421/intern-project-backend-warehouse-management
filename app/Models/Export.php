@@ -19,6 +19,20 @@ class Export extends Model
         'warehouse_branch_id',
     ];
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function ($export) {
+            $categories = $export->categories;
+
+            if ($categories->isNotEmpty()) {
+
+                $export->categories()->detach();
+            }
+        });
+    }
+
     public function warehouseBranch(): BelongsTo
     {
         return $this->belongsTo(WarehouseBranch::class);
