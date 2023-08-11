@@ -9,7 +9,6 @@ use App\Models\Staff;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Validation\Rule;
 
 class LocationController extends Controller
 {
@@ -21,7 +20,7 @@ class LocationController extends Controller
             'no_pagination' => ['nullable', 'boolean'],
         ]);
 
-        if ($user->canAny(['manage-branch-location', 'read-location'])) {
+        if ($user->canAny(['manage-branch-location', 'read-branch-location'])) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
             $query = Location::query()
                 ->where('warehouse_branch_id', $staff->warehouse_branch_id);

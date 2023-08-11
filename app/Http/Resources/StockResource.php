@@ -14,6 +14,7 @@ class StockResource extends JsonResource
         return [
             'id' => $this->getKey(),
             'category_name' => $category->name,
+            'category_unit' => $category->unit,
             'unit' => $category->unit,
             'location_id' => $this->location_id,
             'location_name' => $this->location?->name,

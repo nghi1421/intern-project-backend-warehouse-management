@@ -20,8 +20,7 @@ class StockController extends Controller
         $user = $request->user();
 
         if (
-            ($user->can('manage-stock') && in_array($user->role->name, ['Nhan vien kho', 'Thu kho']))
-            || $user->can('read-branch-stock')
+            $user->canAny(['read-branch-stock', 'manage-branch-stock'])
         ) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
 
