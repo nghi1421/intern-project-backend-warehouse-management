@@ -61,7 +61,7 @@ class GeneratePDFController extends Controller
 
         //     $pdf->setPaper('A4', 'landscape');
 
-        //     return $pdf->stream('import.pdf');
+        //     return $pdf->download('import.pdf');
         // }
 
         // abort(403);
@@ -143,7 +143,7 @@ class GeneratePDFController extends Controller
 
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->stream('export.pdf');
+        return $pdf->stream($this->generatePDFFileName('export', $exportId));
     }
 
     protected function generatePDFFileName(string $prefix, string $id): string

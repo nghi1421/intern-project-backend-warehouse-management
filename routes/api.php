@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\GeneratePDFController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PositionController;
@@ -44,7 +45,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('stocks', StockController::class);
 
     Route::resource('locations', LocationController::class);
+
+    // Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
+
+    // Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
 });
+
+// Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
+
+// Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
 
 
 
