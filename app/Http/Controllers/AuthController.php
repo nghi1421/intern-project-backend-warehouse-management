@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -55,6 +56,35 @@ class AuthController extends Controller
         $permissions = $user->role->permissions->toArray();
 
         return new JsonResponse($permissions);
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'old_password' => ['required', 'max:255'],
+            'new_password' => ['required', 'confirmed', 'max:255'],
+        ]);
+
+        if (!Hash::check($request->input('old_password'), $user->password)) {
+
+            return new JsonResponse([
+                'message' => 'Change password failed',
+            ], 422);
+        }
+
+        $user->password = bcrypt($request->input('new_password'));
+
+        if (!$user->update()) {
+            return new JsonResponse([
+                'message' => 'Change password failed',
+            ], 422);
+        }
+
+        return new JsonResponse([
+            'message' => 'Change password successfully',
+        ]);
     }
 
     public function logout(Request $request): JsonResponse

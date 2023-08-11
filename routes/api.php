@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('get-permission', [AuthController::class, 'getPermisson'])
         ->name('get-permission');
 
+    Route::post('change-password', [AuthController::class, 'changePassword']);
+
     Route::resource('staffs', StaffController::class);
 
     Route::resource('users', UserController::class);
@@ -46,16 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('locations', LocationController::class);
 
-    // Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
+    Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
 
-    // Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
+    Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
 });
-
-// Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
-
-// Route::get('/pdf/export/{exportId}', [GeneratePDFController::class, 'export']);
-
-
 
 Route::get('test', function () {
     return new JsonResponse('123');

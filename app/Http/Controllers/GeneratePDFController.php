@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Enums\ExportStatus;
 use App\Models\Enums\ImportStatus;
 use App\Models\Export;
 use App\Models\Import;
@@ -136,7 +137,7 @@ class GeneratePDFController extends Controller
             'staff_dob' => Carbon::create($export->staff->dob)->format('d/m/Y'),
             'categories' => $categories,
             'warehouse_branch' => $export->warehouseBranch->toArray(),
-            'status' => Export::tryFrom($export->status)->label(),
+            'status' => ExportStatus::tryFrom($export->status)->label(),
             'created_at' => $export->created_at->format('H:i:s d/m/Y'),
         ];
         $pdf = PDF::loadView('export', $exportData);
