@@ -18,6 +18,8 @@ class Stock extends Model
         'expiry_date',
     ];
 
+    public $timestamps = false;
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(WarehouseBranch::class);

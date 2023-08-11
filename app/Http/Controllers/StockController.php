@@ -66,7 +66,7 @@ class StockController extends Controller
         $user = $request->user();
         $stock = Stock::query()->findOrFail($id);
         if (
-            ($user->can('manage-stock') && in_array($user->role->name, ['Nhan vien kho', 'Thu kho']))
+            $user->can('manage-stock')
             || $user->can('read-branch-stock')
         ) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
@@ -94,7 +94,7 @@ class StockController extends Controller
         $user = $request->user();
         $stock = Stock::query()->findOrFail($id);
 
-        if ($user->can('manage-stock') && in_array($user->role->name, ['Nhan vien kho', 'Thu kho'])) {
+        if ($user->can('manage-branch-stock')) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
 
             $importBranchIds = Import::query()
@@ -104,28 +104,28 @@ class StockController extends Controller
                 ->toArray();
 
             if (!in_array($stock->import_id, $importBranchIds)) {
-                return new JsonResource(['message' => 'Stock does in this warehouse branch'], 403);
+                return new JsonResponse(['message' => 'Stock does in this warehouse branch'], 403);
             }
 
             try {
                 if (!$stock->update($request->validated())) {
-                    return new JsonResource(['message' => 'Updating stock failed'], 402);
+                    return new JsonResponse(['message' => 'Updating stock failed'], 402);
                 }
             } catch (Exception $exception) {
-                return new JsonResource(['message' => $exception->getMessage()], 403);
+                return new JsonResponse(['message' => $exception->getMessage()], 403);
             }
-            return new JsonResource(['message' => 'Updating stock successfully']);
+            return new JsonResponse(['message' => 'Updating stock successfully']);
         }
 
         if ($user->can('manage-stock')) {
             try {
                 if (!$stock->update($request->validated())) {
-                    return new JsonResource(['message' => 'Updating stock failed'], 402);
+                    return new JsonResponse(['message' => 'Updating stock failed'], 402);
                 }
             } catch (Exception $exception) {
-                return new JsonResource(['message' => $exception->getMessage()], 403);
+                return new JsonResponse(['message' => $exception->getMessage()], 403);
             }
-            return new JsonResource(['message' => 'Updating stock successfully']);
+            return new JsonResponse(['message' => 'Updating stock successfully']);
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);

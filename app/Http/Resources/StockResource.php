@@ -11,8 +11,15 @@ class StockResource extends JsonResource
     {
         $category = $this->category;
 
+        $import = $this->import;
+
+        $provider = $import->provider;
+
+        $staff = $import->staff;
+
         return [
             'id' => $this->getKey(),
+            'category' => $category,
             'category_name' => $category->name,
             'category_unit' => $category->unit,
             'unit' => $category->unit,
@@ -20,6 +27,12 @@ class StockResource extends JsonResource
             'location_name' => $this->location?->name,
             'location' => $this->location,
             'import_id' => $this->import_id,
+            'import' => [
+                'id' => $this->import_id,
+                'created_by' => $staff->name,
+                'provider' => $provider->name,
+                'created_at' => $import->created_at->format('H:i:s d/m/Y')
+            ],
             'expiry_date' => $this->expiry_date,
         ];
     }
