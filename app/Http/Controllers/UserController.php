@@ -16,6 +16,17 @@ class UserController extends Controller
     public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
         if ($request->user()->can('manage-account')) {
+            if ($searchTerm = $request->input('search')) {
+
+                $resultSearch = User::query()
+                    ->fullTextSearch(['username'], $searchTerm)
+                    ->orWhere('id', $searchTerm)
+                    ->orWhere('role_id', $searchTerm)
+                    ->paginate(5);
+
+                return UserResource::collection($resultSearch);
+            }
+
             return UserResource::collection(User::query()->paginate(5));
         }
 
@@ -41,8 +52,10 @@ class UserController extends Controller
 
     public function show(string $id, Request $request): JsonResponse
     {
-        if ($request->user()->can('manage-user')) {
-            User::query()->findOrFail($id);
+        if ($request->user()->can('manage-account')) {
+            $user = User::query()->findOrFail($id);
+
+            return new JsonResponse([...$user->toArray(), 'permissions' => $user->permissions]);
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
