@@ -16,7 +16,7 @@ class PositionController extends Controller
     {
         $user = $request->user();
 
-        if ($user->canAny(['manage-position', 'read-position'])) {
+        if ($user->can('manage-position')) {
             return new JsonResponse([
                 'positions' => Position::query()->select(['id', 'name'])->get(),
                 'pagination' => Position::query()->paginate(5)
@@ -28,7 +28,7 @@ class PositionController extends Controller
 
     public function show(string $id, Request $request): JsonResponse
     {
-        if ($request->user()->canAny(['manage-position', 'read-position'])) {
+        if ($request->user()->can('manage-position')) {
             $position = Position::query()->findOrFail($id);
 
             return new JsonResponse($position);
@@ -61,7 +61,6 @@ class PositionController extends Controller
             $validated = Validator::make($request->all(), [
                 'name' => [
                     'required',
-                    'string',
                     Rule::unique('positions', 'name')->ignore($position)
                 ]
             ])->validated();
@@ -90,8 +89,7 @@ class PositionController extends Controller
                 ], 422);
             }
             try {
-                $result = Position::query()->delete();
-                if (!$result) {
+                if (!$position::query()->delete()) {
                     return new JsonResponse([
                         'message' => 'Deleting position failed.',
                     ], 422);
