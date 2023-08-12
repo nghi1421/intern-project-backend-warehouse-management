@@ -2,38 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserCollection;
+use App\Http\Requests\User\CreateUser;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
-        if ($request->user()->can('manage-user')) {
+        if ($request->user()->can('manage-account')) {
             return UserResource::collection(User::query()->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function store(Request $request)
+    public function store(CreateUser $request): JsonResponse
     {
+        if ($request->user()->can('manage-account')) {
+            $newUser = User::query()->create($request->validated());
+
+            if (!$newUser) {
+                return new JsonResponse(['message' => 'Creating account failed'], 422);
+            }
+
+            $newUser->attach($request->input('permissions'));
+
+            return new JsonResponse(['message' => 'Account create successfully']);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function show(string $id)
+    public function show(string $id, Request $request): JsonResponse
     {
+        if ($request->user()->can('manage-user')) {
+            User::query()->findOrFail($id);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
+        if ($request->user()->can('manage-account')) {
+            $user = User::query()->findOrFail($id);
+
+            if ($request->input('reset-password')) {
+                if (!$user->update(['passsword' => '123123123'])) {
+                    return new JsonResponse(['message' => 'Account update failed']);
+                }
+
+                return new JsonResponse(['message' => 'Password account reseted successfully']);
+            }
+
+            $validated = Validator::make($request->all(), [
+                'username' => ['sometimes', 'min:8', 'max:255', Rule::unique('users', 'username')->ignore($user)],
+                'password' => ['sometimes', 'confirmed', 'min:8', 'max:255'],
+                'role_id' => ['sometimes', 'exists:roles,id'],
+                'permissions' => ['sometimes', 'array', 'min:1'],
+                'permissions.*' => ['sometimes', 'exists:permissions,id']
+            ])->validated();
+
+            if (!$user->update($validated)) {
+                return new JsonResponse(['message' => 'Account update failed']);
+            }
+
+            $user->sync($request->input('permissions'));
+
+            return new JsonResponse(['message' => 'Account update successfully']);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 
 
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request): JsonResponse
     {
+        if ($request->user()->can('manage-account')) {
+            $user = User::query()->findOrFail($id);
+            if ($request->user()->getKey() == $id) {
+                return new JsonResponse(['message' => 'You could not delete your account'], 422);
+            }
+
+            if (!$user->delete()) {
+                return new JsonResponse(['message' => 'Account deleted fail']);
+            }
+
+            return new JsonResponse(['message' => 'Account deleted successfully']);
+        }
+
+        return new JsonResponse(['message' => 'Forbidden'], 403);
     }
 }

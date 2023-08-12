@@ -35,8 +35,12 @@ class User extends Authenticatable
     {
         parent::boot();
 
-        static::created(function (User $user) {
-            $user->permissions()->attach($user->role->permissions()->pluck('id'));
+        // static::created(function (User $user) {
+        //     $user->permissions()->sync($user->role->permissions()->pluck('id'));
+        // });
+
+        static::deleting(function (User $user) {
+            $user->permissions()->detach();
         });
     }
 

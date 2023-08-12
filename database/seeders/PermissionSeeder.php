@@ -17,8 +17,8 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'name' => 'statistic',
-                'description' => 'Statistic stock, customer, amount import... in date range'
+                'name' => 'read-role',
+                'description' => 'Can read role'
             ],
             [
                 'id' => 3,
@@ -42,7 +42,7 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'name' => 'manage-user',
+                'name' => 'manage-account',
                 'description' => 'Can implement CRUD account'
             ],
             [
@@ -144,6 +144,11 @@ class PermissionSeeder extends Seeder
             [
                 'id' => 24,
                 'name' => 'read-warehouse-branch',
+                'description' => 'Can read branch location'
+            ],
+            [
+                'id' => 25,
+                'name' => 'read-permission',
                 'description' => 'Can read branch location'
             ],
         ];
