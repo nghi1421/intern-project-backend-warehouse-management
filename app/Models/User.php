@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -30,6 +31,20 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::created(function (User $user) {
+            $user->permissions()->attach($user->role->permissions()->pluck('id'));
+        });
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
+
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
@@ -37,7 +52,7 @@ class User extends Authenticatable
 
     public function hasPermission(Permission $permission)
     {
-        return (bool) $this->role->permissions->where('name', $permission->name)->count();
+        return (bool) $this->permissions->where('name', $permission->name)->count();
     }
 
     protected function getAllPermissions(array $permissions)

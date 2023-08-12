@@ -16,18 +16,18 @@ class RoleSeeder extends Seeder
                 'id' => 1,
                 'name' => 'Nhan vien quan li',
                 'actionIds' => [
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 22, 30, 28
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
                 ]
             ],
             [
                 'id' => 2,
                 'name' => 'Thu kho',
-                'actionIds' => [13, 14, 15, 16, 18, 19, 20, 23, 24, 25, 26, 27, 29]
+                'actionIds' => [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
             ],
             [
                 'id' => 3,
                 'name' => 'Nhan vien kho',
-                'actionIds' => [17, 11, 14, 15, 16, 23]
+                'actionIds' => [17]
             ]
         ];
 

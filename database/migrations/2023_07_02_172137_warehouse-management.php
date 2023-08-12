@@ -40,6 +40,14 @@ return new class extends Migration
             $table->primary(['role_id', 'permission_id']);
         });
 
+        Schema::create('user_permissions', function (Blueprint $table) {
+            $table->foreignId('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreignId('permission_id');
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->primary(['user_id', 'permission_id']);
+        });
+
         Schema::create('warehouse_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
@@ -116,13 +124,6 @@ return new class extends Migration
 
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
-            // // 1 as soon as possible
-            // // 2 in 6 hours
-            // // 3 in 12 hours
-            // // 4 in 1 day
-            // // 5 in 3 day
-            // // 6 in a week
-            // $table->tinyInteger('time_status')->default(1);
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');

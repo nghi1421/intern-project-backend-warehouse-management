@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -9,13 +10,16 @@ class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $staff = Staff::query()->where('user_id', $this->getKey())->first();
         return  [
             'id' => $this->getKey(),
             'username' => $this->username,
+            'staff_name' => $staff->name,
+            'permissions' => $this->role->permissions,
             'role' => $this->role,
             'role_name' => $this->role->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'upddated_at' => $this->upddated_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }

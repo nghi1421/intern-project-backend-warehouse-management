@@ -32,58 +32,58 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'name' => 'manage-conservation',
-                'description' => 'Can implement CRUD conservation'
+                'name' => 'manage-import',
+                'description' => 'Can implement CRUD import'
             ],
             [
                 'id' => 6,
+                'name' => 'manage-export',
+                'description' => 'Can implement CRUD export'
+            ],
+            [
+                'id' => 7,
+                'name' => 'manage-user',
+                'description' => 'Can implement CRUD account'
+            ],
+            [
+                'id' => 8,
                 'name' => 'manage-warehouse-branch',
                 'description' => 'Can implement CRUD warehouse branch'
             ],
             [
-                'id' => 7,
-                'name' => 'read-stock',
-                'description' => 'Can read stocks'
-            ],
-            [
-                'id' => 8,
-                'name' => 'read-import',
-                'description' => 'Can read imports'
-            ],
-            [
                 'id' => 9,
-                'name' => 'read-export',
-                'description' => 'Can read exports'
+                'name' => 'manage-stock',
+                'description' => 'Can implement CRUD stock'
             ],
             [
                 'id' => 10,
+                'name' => 'manage-location',
+                'description' => 'Can implement CRUD location'
+            ],
+            [
+                'id' => 11,
                 'name' => 'manage-position',
                 'description' => 'Can implement CRUD position'
             ],
             [
-                'id' => 11,
-                'name' => 'read-branch-location',
-                'description' => 'Can read location'
-            ],
-            [
                 'id' => 12,
-                'name' => 'change-permission',
+                'name' => 'change-permission-user',
                 'description' => 'Can change permission for lower staffs'
             ],
             [
                 'id' => 13,
+                'name' => 'cancel-import',
+                'description' => 'Cacel import'
+            ],
+            [
+                'id' => 14,
                 'name' => 'manage-branch-staff', //Stocker
                 'description' => 'Can implement CRUD staffs of there branch'
             ],
             [
-                'id' => 14,
+                'id' => 15,
                 'name' => 'read-category',
                 'description' => 'Can read category'
-            ],
-            [
-                'id' => 15,
-                'name' => 'read-conservation',
-                'description' => 'Can read conservation'
             ],
             [
                 'id' => 16,
@@ -92,7 +92,7 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'id' => 17,
-                'name' => 'read-branch-stock',
+                'name' => 'manage-branch-stock',
                 'description' => 'Can read stock of warehouse branch staff is working'
             ],
             [
@@ -105,61 +105,47 @@ class PermissionSeeder extends Seeder
                 'name' => 'read-branch-export',
                 'description' => 'Can read export of warehouse branch staff is working'
             ],
+            // [
+            //     'id' => 20,
+            //     'name' => 'export-report',
+            //     'description' => 'Can export report of warehouse branch staff is working'
+            // ],
+            // [
+            //     'id' => 21,
+            //     'name' => 'manage-import',
+            //     'description' => 'Can CRUD import at warehouse branch user is working'
+            // ],
+            // [
+            //     'id' => 22,
+            //     'name' => 'manage-export',
+            //     'description' => 'Can CRUD export at warehouse branch user is working'
+            // ],
+
             [
                 'id' => 20,
-                'name' => 'export-report',
-                'description' => 'Can export report of warehouse branch staff is working'
-            ],
-            [
-                'id' => 21,
-                'name' => 'manage-import',
-                'description' => 'Can CRUD import at warehouse branch user is working'
-            ],
-            [
-                'id' => 22,
-                'name' => 'manage-export',
-                'description' => 'Can CRUD export at warehouse branch user is working'
-            ],
-            [
-                'id' => 23,
-                'name' => 'manage-branch-stock', //warehouse-staff
-                'description' => 'Can CRUD stock at warehouse branch user is working'
-            ],
-            [
-                'id' => 24,
-                'name' => 'read-warehouse-branch',
-                'description' => 'Can read warehouse branches'
-            ],
-            [
-                'id' => 25,
                 'name' => 'read-position',
                 'description' => 'Can read positions'
             ],
             [
-                'id' => 26,
+                'id' => 21,
                 'name' => 'update-import-status',
                 'description' => 'Can update status of import'
             ],
             [
-                'id' => 27,
+                'id' => 22,
                 'name' => 'update-export-status',
                 'description' => 'Can update status of export'
             ],
             [
-                'id' => 28,
-                'name' => 'manage-location',
-                'description' => 'Can read location'
-            ],
-            [
-                'id' => 29,
+                'id' => 23,
                 'name' => 'manage-branch-location',
                 'description' => 'Can read branch location'
             ],
             [
-                'id' => 30,
-                'name' => 'cancel-import',
-                'description' => 'Cacel import'
-            ]
+                'id' => 24,
+                'name' => 'read-warehouse-branch',
+                'description' => 'Can read branch location'
+            ],
         ];
 
         foreach ($permissions as $permission) {
