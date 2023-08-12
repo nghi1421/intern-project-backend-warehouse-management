@@ -20,6 +20,7 @@ class UserController extends Controller
 
                 $resultSearch = User::query()
                     ->fullTextSearch(['username'], $searchTerm)
+                    ->orWhere('username', 'LIKE', '%' . $searchTerm . '%')
                     ->orWhere('id', $searchTerm)
                     ->orWhere('role_id', $searchTerm)
                     ->paginate(5);
@@ -42,7 +43,7 @@ class UserController extends Controller
                 return new JsonResponse(['message' => 'Creating account failed'], 422);
             }
 
-            $newUser->attach($request->input('permissions'));
+            $newUser->permissions()->attach($request->input('permissions'));
 
             return new JsonResponse(['message' => 'Account create successfully']);
         }
