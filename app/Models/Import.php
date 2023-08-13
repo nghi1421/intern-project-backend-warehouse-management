@@ -62,18 +62,23 @@ class Import extends Model
         });
     }
 
-    public function warehouseBranch(): BelongsTo
-    {
-        return $this->belongsTo(WarehouseBranch::class);
-    }
-
     public function provider(): BelongsTo
     {
-        return $this->belongsto(Provider::class);
+        return $this->belongsTo(Provider::class);
     }
 
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'import_details')->withPivot(['quantity', 'unit_price']);
+    }
+
+    public function warehouseBranch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class, 'warehouse_branch_id');
+    }
+
+    public function fromWarehouseBranch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class, 'from_warehouse_branch_id');
     }
 }

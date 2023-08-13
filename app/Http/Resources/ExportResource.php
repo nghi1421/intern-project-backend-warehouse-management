@@ -25,11 +25,13 @@ class ExportResource extends JsonResource
             'staff_name' => $this->staff->name,
             'warehouse_branch_id' => $this->warehouse_branch_id,
             'warehouse_branch_name' => $this->warehouseBranch->name,
+            'destination_name' => $this->to_warehouse_branch_id ? $this->toWarehouseBranch->name : '_',
+            'destination_id' => $this->to_warehouse_branch_id ?? '_',
             'categories' => $categories,
             'status_id' => $this->status,
             'status' => ExportStatus::tryFrom($this->status)->label(),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('H:i:s d/m/Y'),
+            'updated_at' => $this->updated_at->format('H:i:s d/m/Y'),
         ];
     }
 }

@@ -84,14 +84,14 @@ return new class extends Migration
 
         Schema::create('imports', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('provider_id')->nullable();
+            $table->foreignId('provider_id')->nullable();
             $table->foreign('provider_id')->references('id')->on('providers');
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->unsignedBigInteger('from_warehouse_branch_id')->nullable();
-            $table->foreign('from_warehouse_branch_id')->references('id')->on('providers');
+            $table->foreignId('from_warehouse_branch_id')->nullable();
+            $table->foreign('from_warehouse_branch_id')->references('id')->on('warehouse_branches');
             $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang kiem tra, 2 hoan thanh
             $table->timestamps();
         });

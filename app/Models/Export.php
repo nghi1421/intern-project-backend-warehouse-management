@@ -103,7 +103,12 @@ class Export extends Model
 
     public function warehouseBranch(): BelongsTo
     {
-        return $this->belongsTo(WarehouseBranch::class);
+        return $this->belongsTo(WarehouseBranch::class, 'warehouse_branch_id');
+    }
+
+    public function toWarehouseBranch(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseBranch::class, 'to_warehouse_branch_id');
     }
 
     public function categories(): BelongsToMany

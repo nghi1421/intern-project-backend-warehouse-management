@@ -17,8 +17,8 @@ class WarehouseBranchResource extends JsonResource
             'phone_number' => $this->phone_number,
             'opening' => $this->opening,
             'status' => $this->opening ? 'opening' : 'closed',
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('H:i:s d/m/Y'),
+            'updated_at' => $this->updated_at->format('H:i:s d/m/Y'),
         ];
     }
 }

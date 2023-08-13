@@ -3,24 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Position\CreatePosition;
+use App\Http\Resources\PositionResource;
 use App\Models\Position;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class PositionController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
         $user = $request->user();
 
         if ($user->canAny(['manage-position', 'read-position'])) {
-            return new JsonResponse([
-                'positions' => Position::query()->select(['id', 'name'])->get(),
-                'pagination' => Position::query()->paginate(5)
+
+            $request->validate([
+                'no_pagination' => ['nullable', 'boolean'],
             ]);
+
+            if ($request->input('no_pagination')) {
+                return PositionResource::collection(Position::query()->get());
+            }
+
+            return PositionResource::collection(Position::query()->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
