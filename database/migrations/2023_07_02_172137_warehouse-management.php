@@ -40,14 +40,6 @@ return new class extends Migration
             $table->primary(['role_id', 'permission_id']);
         });
 
-        Schema::create('user_permissions', function (Blueprint $table) {
-            $table->foreignId('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreignId('permission_id');
-            $table->foreign('permission_id')->references('id')->on('permissions');
-            $table->primary(['user_id', 'permission_id']);
-        });
-
         Schema::create('warehouse_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
@@ -90,24 +82,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('locations', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 50);
-            $table->foreignId('warehouse_branch_id');
-            $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->unique(['name', 'warehouse_branch_id']);
-            $table->string('description', 255);
-            $table->timestamps();
-        });
-
         Schema::create('imports', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('provider_id');
+            $table->unsignedBigInteger('provider_id')->nullable();
             $table->foreign('provider_id')->references('id')->on('providers');
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
+            $table->unsignedBigInteger('from_warehouse_branch_id')->nullable();
+            $table->foreign('from_warehouse_branch_id')->references('id')->on('providers');
             $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang kiem tra, 2 hoan thanh
             $table->timestamps();
         });
@@ -128,7 +112,9 @@ return new class extends Migration
             $table->foreign('staff_id')->references('id')->on('staffs');
             $table->foreignId('warehouse_branch_id');
             $table->foreign('warehouse_branch_id')->references('id')->on('warehouse_branches');
-            $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang chuan bi, 2 hoan thanh
+            $table->foreignId('to_warehouse_branch_id')->nullable();
+            $table->foreign('to_warehouse_branch_id')->references('id')->on('warehouse_branches');
+            $table->tinyInteger('status')->default(1); //status 0: huy, 1 khoi tao, 2 dang chuan bi, 3 hoan thanh
             $table->timestamps();
         });
 
@@ -141,18 +127,15 @@ return new class extends Migration
             $table->primary(['export_id', 'category_id']);
         });
 
-
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('import_id');
             $table->foreign('import_id')->references('id')->on('imports');
-            $table->unsignedBigInteger('export_id')->nullable();
-            $table->foreign('export_id')->references('id')->on('exports');
             $table->foreignId('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
-            $table->unsignedBigInteger('location_id')->nullable();
-            $table->foreign('location_id')->references('id')->on('locations');
+            $table->integer('quantity');
             $table->date('expiry_date')->nullable();
+            $table->unique(['import_id', 'category_id']);
         });
     }
 
@@ -170,7 +153,7 @@ return new class extends Migration
         Schema::dropIfExists('import_details');
         Schema::dropIfExists('exports');
         Schema::dropIfExists('export_details');
-        Schema::dropIfExists('locations');
+        // Schema::dropIfExists('locations');
         Schema::dropIfExists('stocks');
     }
 };

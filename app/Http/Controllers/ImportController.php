@@ -100,11 +100,13 @@ class ImportController extends Controller
         }
 
         if ($user->can('cancel-import')) {
-            if ($import->status === 1 && $request->input('status') === 0) {
-                $import->update(['status' => 0]);
-                return new JsonResponse(['message' => 'Import cancel successfully.']);
-            } else {
-                return new JsonResponse(['message' => 'Could not cancel import.']);
+            if ($request->input('status') === 0) {
+                if ($import->status === 1) {
+                    $import->update(['status' => 0]);
+                    return new JsonResponse(['message' => 'Import cancel successfully.']);
+                } else {
+                    return new JsonResponse(['message' => 'Could not cancel import.']);
+                }
             }
         }
 
@@ -128,21 +130,24 @@ class ImportController extends Controller
 
             try {
                 DB::beginTransaction();
+                if ($request->input('categories') && $request->input('amounts') && $request->input('unit_prices')) {
+                    $categories = $request->input('categories');
 
-                $categories = $request->input('categories');
+                    $amounts = $request->input('amounts');
 
-                $amounts = $request->input('amounts');
+                    $unitPrices = $request->input('unit_prices');
 
-                $unitPrices = $request->input('unit_prices');
+                    $importDetails = array_map(fn ($value, $index) => [
+                        'quantity' => $value,
+                        'unit_price' => $unitPrices[$index]
+                    ], $amounts, array_keys($amounts));
 
-                $importDetails = array_map(fn ($value, $index) => [
-                    'quantity' => $value,
-                    'unit_price' => $unitPrices[$index]
-                ], $amounts, array_keys($amounts));
+                    $importDetails = array_combine($categories, $importDetails);
 
-                $importDetails = array_combine($categories, $importDetails);
+                    $import->categories()->sync($importDetails);
+                }
 
-                $import->categories()->sync($importDetails);
+                $import->update($request->validated());
 
                 DB::commit();
             } catch (Exception $exception) {

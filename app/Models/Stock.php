@@ -12,9 +12,8 @@ class Stock extends Model
 
     protected $fillable = [
         'import_id',
-        'export_id',
         'category_id',
-        'location_id',
+        'quantity',
         'expiry_date',
     ];
 
@@ -25,19 +24,9 @@ class Stock extends Model
         return $this->belongsTo(WarehouseBranch::class);
     }
 
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(Location::class);
-    }
-
     public function import(): BelongsTo
     {
         return $this->belongsTo(Import::class);
-    }
-
-    public function export(): BelongsTo
-    {
-        return $this->belongsTo(Export::class);
     }
 
     public function category(): BelongsTo

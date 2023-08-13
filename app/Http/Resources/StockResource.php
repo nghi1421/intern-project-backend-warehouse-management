@@ -19,14 +19,17 @@ class StockResource extends JsonResource
 
         return [
             'id' => $this->getKey(),
-            'category' => $category,
+            'category' => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'unit' => $category->unit,
+                'description' => $category->description,
+            ],
             'category_name' => $category->name,
             'category_unit' => $category->unit,
-            'unit' => $category->unit,
-            'location_id' => $this->location_id,
-            'location_name' => $this->location?->name,
-            'location' => $this->location,
+            'quantity' => $this->quantity,
             'import_id' => $this->import_id,
+            'imported_date' => $import->created_at->format('H:i:s d/m/Y'),
             'import' => [
                 'id' => $this->import_id,
                 'created_by' => $staff->name,

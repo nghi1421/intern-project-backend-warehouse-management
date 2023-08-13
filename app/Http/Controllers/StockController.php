@@ -30,26 +30,28 @@ class StockController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $stocks = Stock::query()->whereIn('import_id', $importBranchIds)
-                ->when($request->input('export-filter') === 'not-in-export', function ($query) {
-                    return $query->whereNull('export_id');
-                })
-                ->when($request->input('export-filter') === 'in-export', function ($query) {
-                    return $query->whereNotNull('export_id');
-                })
-                ->when($request->input('location') === 'no', function ($query) {
-                    return $query->whereNull('location_id');
-                })
-                ->when($request->input('location') === 'yes', function ($query) {
-                    return $query->whereNotNull('location_id');
-                })
-                ->when($request->input('expiry-date') === 'no', function ($query) {
-                    return $query->whereNull('expiry_date');
-                })
-                ->when($request->input('expiry-date') === 'yes', function ($query) {
-                    return $query->whereNotNull('expiry_date');
-                })
-                ->paginate(5);
+            // $stocks = Stock::query()->whereIn('import_id', $importBranchIds)
+            //     ->when($request->input('export-filter') === 'not-in-export', function ($query) {
+            //         return $query->whereNull('export_id');
+            //     })
+            //     ->when($request->input('export-filter') === 'in-export', function ($query) {
+            //         return $query->whereNotNull('export_id');
+            //     })
+            //     ->when($request->input('location') === 'no', function ($query) {
+            //         return $query->whereNull('location_id');
+            //     })
+            //     ->when($request->input('location') === 'yes', function ($query) {
+            //         return $query->whereNotNull('location_id');
+            //     })
+            //     ->when($request->input('expiry-date') === 'no', function ($query) {
+            //         return $query->whereNull('expiry_date');
+            //     })
+            //     ->when($request->input('expiry-date') === 'yes', function ($query) {
+            //         return $query->whereNotNull('expiry_date');
+            //     })
+            //     ->paginate(5);
+
+            $stocks = Stock::query()->whereIn('import_id', $importBranchIds)->paginate(5);
 
             return StockResource::collection($stocks);
         }

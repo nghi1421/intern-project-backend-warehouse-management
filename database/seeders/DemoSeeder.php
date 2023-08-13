@@ -25,7 +25,5 @@ class DemoSeeder extends Seeder
         $this->call(ProviderSeeder::class);
 
         $this->call(ImportSeeder::class);
-
-        $this->call(LocationSeeder::class);
     }
 }

@@ -151,6 +151,16 @@ class PermissionSeeder extends Seeder
                 'name' => 'read-permission',
                 'description' => 'Can read branch location'
             ],
+            [
+                'id' => 26,
+                'name' => 'read-branch-export',
+                'description' => 'Can read category'
+            ],
+            [
+                'id' => 27,
+                'name' => 'read-branch-location',
+                'description' => 'Can read category'
+            ],
         ];
 
         foreach ($permissions as $permission) {

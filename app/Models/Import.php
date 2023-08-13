@@ -18,6 +18,7 @@ class Import extends Model
     protected $fillable = [
         'provider_id',
         'warehouse_branch_id',
+        'from_warehouse_branch_id',
         'staff_id',
         'status',
     ];
@@ -33,24 +34,16 @@ class Import extends Model
 
                     $importDetail = $import->load('categories');
 
-                    $stocks = [];
-
                     foreach ($importDetail->categories as $detail) {
 
-                        for ($i = 0; $i < $detail->pivot->quantity; $i++) {
-
-                            $stocks[] = [
-                                'category_id' => $detail->getKey(),
-                                'import_id' => $import->getKey(),
-                            ];
-                        }
+                        Stock::query()->create([
+                            'import_id' => $import->getKey(),
+                            'category_id' => $detail->getKey(),
+                            'quantity' => $detail->pivot->quantity
+                        ]);
                     }
 
-                    $status = (bool) Stock::query()->insertOrIgnore($stocks);
-
                     DB::commit();
-
-                    return $status;
                 } catch (Exception $exception) {
                     DB::rollback();
 

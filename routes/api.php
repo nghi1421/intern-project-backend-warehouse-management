@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])
         ->name('logout');
 
-    Route::get('get-permission', [AuthController::class, 'getPermisson'])
+    Route::get('get-permission', [AuthController::class, 'getPermission'])
         ->name('get-permission');
 
     Route::post('change-password', [AuthController::class, 'changePassword']);
@@ -47,8 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('providers', ProviderController::class);
 
     Route::resource('stocks', StockController::class);
-
-    Route::resource('locations', LocationController::class);
 
     Route::get('/pdf/import/{importId}', [GeneratePDFController::class, 'import']);
 

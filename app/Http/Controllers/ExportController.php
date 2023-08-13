@@ -6,11 +6,14 @@ use App\Http\Requests\Export\CreateExport;
 use App\Http\Requests\Export\UpdateExport;
 use App\Http\Resources\ExportResource;
 use App\Models\Export;
+use App\Models\Import;
 use App\Models\Staff;
+use App\Models\Stock;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class ExportController extends Controller
 {
@@ -50,7 +53,7 @@ class ExportController extends Controller
 
                 $newExport = Export::query()->create($request->validated());
 
-                $newExport->categories()->sync($exportDetails);
+                $newExport->categories()->attach($exportDetails);
 
                 return new JsonResponse([
                     'message' => 'Create export successfully'
@@ -82,7 +85,7 @@ class ExportController extends Controller
         $export =  Export::query()->findOrFail($id);
 
         if ($export->status === 3) {
-            return new JsonResponse(['message' => 'Export is done. Could not']);
+            return new JsonResponse(['message' => 'Export is done. Could not modify.']);
         }
 
         if ($user->can('update-export-status')) {
@@ -90,10 +93,22 @@ class ExportController extends Controller
                 $export->update(['status' => 2]);
                 return new JsonResponse(['message' => 'Switch to checking status successfully.']);
             } else if ($export->status === 2 && $request->input('status') === 3) {
-                $export->update(['status' => 3]);
-                return new JsonResponse(['message' => 'Export completed successfully.']);
+                try {
+                    if (!$export->update(['status' => 3])) {
+                        return new JsonResponse(['message' => 'Update export failed'], 422);
+                    }
+                } catch (Exception $exception) {
+                    return new JsonResponse(['message' => $exception->getMessage()], 422);
+                }
+
+                return new JsonResponse([
+                    'message' => 'Export completed successfully.'
+                ]);
             } else {
-                return new JsonResponse(['message' => 'You do not have permission to do this action.']);
+
+                return new JsonResponse([
+                    'message' => 'You do not have permission to do this action.'
+                ], 422);
             }
         }
         if ($user->can('manage-export')) {
@@ -102,17 +117,21 @@ class ExportController extends Controller
                 return new JsonResponse(['message' => 'Export is done. Could not update import']);
             }
 
-            $categories = $request->input('categories');
+            if ($request->input('categories') && $request->input('amounts')) {
+                $categories = $request->input('categories');
 
-            $amounts = $request->input('amounts');
+                $amounts = $request->input('amounts');
 
-            $exportDetails = array_map(fn ($value) => [
-                'quantity' => $value,
-            ], $amounts, array_keys($amounts));
+                $exportDetails = array_map(fn ($value) => [
+                    'quantity' => $value,
+                ], $amounts, array_keys($amounts));
 
-            $exportDetails = array_combine($categories, $exportDetails);
+                $exportDetails = array_combine($categories, $exportDetails);
 
-            $export->categories()->sync($exportDetails);
+                $export->categories()->sync($exportDetails);
+            }
+
+            $export->update($request->validated());
 
             return new JsonResponse([
                 'message' => 'Update export successfully'

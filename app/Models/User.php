@@ -39,10 +39,6 @@ class User extends Authenticatable
         // static::created(function (User $user) {
         //     $user->permissions()->sync($user->role->permissions()->pluck('id'));
         // });
-
-        static::deleting(function (User $user) {
-            $user->permissions()->detach();
-        });
     }
 
     public function permissions(): BelongsToMany
@@ -57,7 +53,7 @@ class User extends Authenticatable
 
     public function hasPermission(Permission $permission)
     {
-        return (bool) $this->permissions->where('name', $permission->name)->count();
+        return (bool) $this->role->permissions->where('name', $permission->name)->count();
     }
 
     protected function getAllPermissions(array $permissions)

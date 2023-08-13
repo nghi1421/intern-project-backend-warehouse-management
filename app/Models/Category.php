@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
@@ -33,11 +34,6 @@ class Category extends Model
     //     });
     // }
 
-    // public function principles(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(Principle::class, 'category_principles');
-    // }
-
     public function imports(): BelongsToMany
     {
         return $this->belongsToMany(Import::class, 'import_details')->withPivot(['quantity', 'unit_price']);
@@ -46,5 +42,10 @@ class Category extends Model
     public function exports(): BelongsToMany
     {
         return $this->belongsToMany(Export::class, 'export_details')->withPivot(['quantity']);
+    }
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(Stock::class);
     }
 }
