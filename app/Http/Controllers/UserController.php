@@ -16,6 +16,17 @@ class UserController extends Controller
     public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
         if ($request->user()->can('manage-account')) {
+
+            $sortField = $request->input('sort_field', 'id');
+            if (!in_array($sortField, ['id', 'username', 'created_at', 'updated_at'])) {
+                $sortField = 'id';
+            }
+
+            $sortDirection = $request->input('sort_direction', 'desc');
+            if (!in_array($sortDirection, ['desc', 'asc'])) {
+                $sortDirection = 'asc';
+            }
+
             if ($searchTerm = $request->input('search')) {
 
                 $resultSearch = User::query()
@@ -23,12 +34,13 @@ class UserController extends Controller
                     ->orWhere('username', 'LIKE', '%' . $searchTerm . '%')
                     ->orWhere('id', $searchTerm)
                     ->orWhere('role_id', $searchTerm)
+                    ->orderBy($sortField, $sortDirection)
                     ->paginate(5);
 
                 return UserResource::collection($resultSearch);
             }
 
-            return UserResource::collection(User::query()->paginate(5));
+            return UserResource::collection(User::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);

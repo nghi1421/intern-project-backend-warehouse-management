@@ -16,9 +16,7 @@ class UpdateStock extends FormRequest
     public function rules(): array
     {
         return [
-            'location_id' => ['sometimes', 'exists:locations,id'],
             'expiry_date' => ['sometimes', 'date', 'after:' . Carbon::now()],
-            'export_id' => ['sometimes', 'exists:exports,id'],
         ];
     }
 }

@@ -13,7 +13,7 @@ class CategoryResource extends JsonResource
             'id' => $this->getKey(),
             'name' => $this->name,
             'unit' => $this->unit,
-            'amount' => $this->stocks->count(),
+            'amount' => $this->stocks->sum('quantity'),
             'description' => $this->description,
             'created_at' => $this->created_at->format('H:i:s d/m/Y'),
             'updated_at' => $this->updated_at->format('H:i:s d/m/Y'),
