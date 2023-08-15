@@ -22,25 +22,36 @@ class UserController extends Controller
                 $sortField = 'id';
             }
 
-            $sortDirection = $request->input('sort_direction', 'desc');
+            if ($sortField === 'role_name') {
+                $sortField = 'role_id';
+            }
+
+            $sortDirection = $request->input('sort_direction', 'asc');
             if (!in_array($sortDirection, ['desc', 'asc'])) {
                 $sortDirection = 'asc';
             }
 
+            $searchColumns = $request->input('search_columns', ['id', 'username']);
+
             if ($searchTerm = $request->input('search')) {
 
-                $resultSearch = User::query()
-                    ->fullTextSearch(['username'], $searchTerm)
-                    ->orWhere('username', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('id', $searchTerm)
-                    ->orWhere('role_id', $searchTerm)
-                    ->orderBy($sortField, $sortDirection)
-                    ->paginate(5);
+                $query = User::query();
 
-                return UserResource::collection($resultSearch);
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return UserResource::collection($query->paginate(5));
+            } else {
+                return UserResource::collection(User::query()->orderBy($sortField, $sortDirection)->paginate(5));
             }
-
-            return UserResource::collection(User::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
