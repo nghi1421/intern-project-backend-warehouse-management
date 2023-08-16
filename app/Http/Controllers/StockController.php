@@ -19,45 +19,62 @@ class StockController extends Controller
     {
         $user = $request->user();
 
+        $sortField = $request->input('sort_field', 'id');
+        if (!in_array($sortField, ['id', 'category_name', 'import_id', 'expiry_date'])) {
+            $sortField = 'id';
+        }
+
+        $sortDirection = $request->input('sort_direction', 'asc');
+        if (!in_array($sortDirection, ['desc', 'asc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $searchColumns = $request->input('search_columns', ['id', 'import_id', 'expiry_date']);
+
         if (
             $user->canAny(['read-branch-stock', 'manage-branch-stock'])
         ) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
-
+            $query = Stock::query();
             $importBranchIds = Import::query()
                 ->where('warehouse_branch_id', $staff->warehouse_branch_id)
                 ->where('status', 3)
                 ->pluck('id')
                 ->toArray();
 
-            // $stocks = Stock::query()->whereIn('import_id', $importBranchIds)
-            //     ->when($request->input('export-filter') === 'not-in-export', function ($query) {
-            //         return $query->whereNull('export_id');
-            //     })
-            //     ->when($request->input('export-filter') === 'in-export', function ($query) {
-            //         return $query->whereNotNull('export_id');
-            //     })
-            //     ->when($request->input('location') === 'no', function ($query) {
-            //         return $query->whereNull('location_id');
-            //     })
-            //     ->when($request->input('location') === 'yes', function ($query) {
-            //         return $query->whereNotNull('location_id');
-            //     })
-            //     ->when($request->input('expiry-date') === 'no', function ($query) {
-            //         return $query->whereNull('expiry_date');
-            //     })
-            //     ->when($request->input('expiry-date') === 'yes', function ($query) {
-            //         return $query->whereNotNull('expiry_date');
-            //     })
-            //     ->paginate(5);
+            $query = Stock::query()->whereIn('import_id', $importBranchIds);
 
-            $stocks = Stock::query()->whereIn('import_id', $importBranchIds)->paginate(5);
+            if ($searchTerm = $request->input('search')) {
 
-            return StockResource::collection($stocks);
+                $query = $query->where($searchColumns[0], $searchTerm);
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[0], $searchTerm);
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return StockResource::collection($query->paginate(5));
+            }
+
+            return StockResource::collection($query->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         if ($user->canAny(['read-stock', 'manage-stock'])) {
-            return StockResource::collection(Stock::query()->paginate(5));
+            $query = Stock::query();
+
+            if ($searchTerm = $request->input('search')) {
+
+                $query = $query->where($searchColumns[0], $searchTerm);
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[0], $searchTerm);
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return StockResource::collection($query->paginate(5));
+            }
+
+            return StockResource::collection($query->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
