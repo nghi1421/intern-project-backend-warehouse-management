@@ -18,16 +18,55 @@ class WarehouseBranchController extends Controller
     {
         $user = $request->user();
 
-        if ($user->canAny(['manage-warehouse-branch', 'read-warehouse-branch'])) {
-            $request->validate([
-                'no_pagination' => ['nullable', 'boolean'],
-            ]);
+        $sortField = $request->input('sort_field', 'id');
+        if (!in_array($sortField, ['id', 'name', 'address', 'status', 'phone_number'])) {
+            $sortField = 'id';
+        }
 
-            if ($request->input('no_pagination')) {
+        if ($sortField === 'status') {
+            $sortField = 'opening';
+        }
+
+        $sortDirection = $request->input('sort_direction', 'asc');
+        if (!in_array($sortDirection, ['desc', 'asc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $searchColumns = $request->input('search_columns', ['id', 'name', 'address', 'phone_number']);
+
+        $request->validate([
+            'no_pagination' => ['nullable', 'boolean'],
+        ]);
+
+        $isNoPagination = $request->input('no_pagination');
+
+        if ($user->canAny(['manage-warehouse-branch', 'read-warehouse-branch'])) {
+
+            if ($isNoPagination) {
                 return WarehouseBranchResource::collection(WarehouseBranch::query()->get());
             }
 
-            return WarehouseBranchResource::collection(WarehouseBranch::query()->paginate(5));
+            if ($searchTerm = $request->input('search')) {
+
+                $query = WarehouseBranch::query();
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return WarehouseBranchResource::collection($query->paginate(5));
+            }
+
+            return WarehouseBranchResource::collection(WarehouseBranch::query()
+                ->orderBy($sortField, $sortDirection)
+                ->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);

@@ -43,6 +43,7 @@ class StaffController extends Controller
         $searchColumns = $request->input('search_columns', ['id', 'name', 'phone_number']);
 
         if ($user->can('manage-all-staff')) {
+
             if ($searchTerm = $request->input('search')) {
 
                 $query = Staff::query();
