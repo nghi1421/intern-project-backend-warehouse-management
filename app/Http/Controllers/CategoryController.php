@@ -27,7 +27,42 @@ class CategoryController extends Controller
                 return Category::query()->select('id', 'name', 'unit')->get();
             }
 
-            return CategoryResource::collection(Category::query()->paginate(5));
+            $sortField = $request->input('sort_field', 'id');
+            if (!in_array($sortField, ['id', 'name', 'unit', 'created_at', 'updated_at'])) {
+                $sortField = 'id';
+            }
+
+            $sortDirection = $request->input('sort_direction', 'asc');
+            if (!in_array($sortDirection, ['desc', 'asc'])) {
+                $sortDirection = 'asc';
+            }
+
+            $searchColumns = $request->input('search_columns', ['id', 'name'], 'unit');
+
+            if ($request->input('no_pagination')) {
+                return CategoryResource::collection(Category::query()->get());
+            }
+
+            if ($searchTerm = $request->input('search')) {
+
+                $query = Category::query();
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return CategoryResource::collection($query->paginate(5));
+            }
+
+
+            return CategoryResource::collection(Category::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
