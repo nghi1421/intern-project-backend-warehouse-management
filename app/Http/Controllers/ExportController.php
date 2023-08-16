@@ -21,15 +21,75 @@ class ExportController extends Controller
     {
         $user = $request->user();
 
+        $sortField = $request->input('sort_field', 'id');
+
+        if (!in_array($sortField, [
+            'id',
+            'staff_name',
+            'warehouse_branch_name',
+            'destination_name',
+            'status',
+            'created_at',
+            'updated_at'
+        ])) {
+            $sortField = 'id';
+        }
+
+        switch ($sortField) {
+            case 'staff_name': {
+                    $sortField = 'staff_id';
+                    break;
+                }
+            case 'warehouse_branch_name': {
+                    $sortField = 'warehouse_branch_id';
+                    break;
+                }
+            case 'destination_name': {
+                    $sortField = 'to_warehouse_branch_id';
+                    break;
+                }
+        }
+
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (!in_array($sortDirection, ['desc', 'asc'])) {
+            $sortDirection = 'asc';
+        }
+
         if ($user->can('manage-export')) {
-            return ExportResource::collection(Export::query()->paginate(5));
+            $query = Export::query();
+
+            if ($searchTerm = $request->input('search')) {
+
+                $query = $query->where('id', $searchTerm);
+
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return ExportResource::collection($query->paginate(5));
+            }
+
+            return ExportResource::collection($query
+                ->orderBy($sortField, $sortDirection)
+                ->paginate(5));
         }
 
         if ($user->can('read-branch-export')) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
-            $exports = Export::query()->where('warehouse_branch_id', $staff->warehouse_branch_id)->paginate(5);
 
-            return ExportResource::collection($exports);
+            $query = Export::query()->where('warehouse_branch_id', $staff->warehouse_branch_id);
+
+            if ($searchTerm = $request->input('search')) {
+
+                $query = $query->where('id', $searchTerm);
+
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return ExportResource::collection($query->paginate(5));
+            }
+
+            return ExportResource::collection($query
+                ->orderBy($sortField, $sortDirection)
+                ->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
