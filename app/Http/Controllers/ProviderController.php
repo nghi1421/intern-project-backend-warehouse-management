@@ -18,16 +18,50 @@ class ProviderController extends Controller
     {
         $user = $request->user();
 
-        if ($user->canAny(['manage-provider', 'read-provider'])) {
-            $request->validate([
-                'no_pagination' => ['nullable', 'boolean'],
-            ]);
+        $sortField = $request->input('sort_field', 'id');
+        if (!in_array($sortField, ['id', 'name', 'address', 'phone_number'])) {
+            $sortField = 'id';
+        }
 
-            if ($request->input('no_pagination')) {
+        $sortDirection = $request->input('sort_direction', 'asc');
+        if (!in_array($sortDirection, ['desc', 'asc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $searchColumns = $request->input('search_columns', ['id', 'name', 'address', 'phone_number']);
+
+        $request->validate([
+            'no_pagination' => ['nullable', 'boolean'],
+        ]);
+
+        $isNoPagination = $request->input('no_pagination');
+        if ($user->canAny(['manage-provider', 'read-provider'])) {
+
+            if ($isNoPagination) {
                 return ProviderResource::collection(Provider::query()->get());
             }
 
-            return ProviderResource::collection(Provider::query()->paginate(5));
+            if ($searchTerm = $request->input('search')) {
+
+                $query = Provider::query();
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return ProviderResource::collection($query->paginate(5));
+            }
+
+            return ProviderResource::collection(Provider::query()
+                ->orderBy($sortField, $sortDirection)
+                ->paginate(5))
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
