@@ -19,15 +19,76 @@ class StaffController extends Controller
     {
         $user = $request->user();
 
+        $sortField = $request->input('sort_field', 'id');
+        if (!in_array($sortField, ['id', 'name', 'position', 'working', 'gender', 'phone_number'])) {
+            $sortField = 'id';
+        }
+
+        switch ($sortField) {
+            case 'position': {
+                    $sortField = 'position_id';
+                    break;
+                }
+            case 'status': {
+                    $sortField = 'working';
+                    break;
+                }
+        }
+
+        $sortDirection = $request->input('sort_direction', 'asc');
+        if (!in_array($sortDirection, ['desc', 'asc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $searchColumns = $request->input('search_columns', ['id', 'name', 'phone_number']);
+
         if ($user->can('manage-all-staff')) {
-            return StaffResource::collection(Staff::query()->paginate(5));
+            if ($searchTerm = $request->input('search')) {
+
+                $query = Staff::query();
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return StaffResource::collection($query->paginate(5));
+            }
+
+            return StaffResource::collection(Staff::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         if ($user->can('manage-branch-staff')) {
             $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
+
+            if ($searchTerm = $request->input('search')) {
+
+                $query = Staff::query()->where('warehouse_branch_id', $staff->warehouse_branch_id);
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->orWhere($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->orWhere($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return StaffResource::collection($query->paginate(5));
+            }
+
             return StaffResource::collection(
                 Staff::query()
                     ->where('warehouse_branch_id', $staff->warehouse_branch_id)
+                    ->orderBy($sortField, $sortDirection)
                     ->paginate(5)
             );
         }

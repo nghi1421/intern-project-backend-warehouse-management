@@ -18,7 +18,7 @@ class UserController extends Controller
         if ($request->user()->can('manage-account')) {
 
             $sortField = $request->input('sort_field', 'id');
-            if (!in_array($sortField, ['id', 'username', 'created_at', 'updated_at'])) {
+            if (!in_array($sortField, ['id', 'username', 'role_name', 'created_at', 'updated_at'])) {
                 $sortField = 'id';
             }
 
@@ -49,9 +49,9 @@ class UserController extends Controller
                 $query = $query->orderBy($sortField, $sortDirection);
 
                 return UserResource::collection($query->paginate(5));
-            } else {
-                return UserResource::collection(User::query()->orderBy($sortField, $sortDirection)->paginate(5));
             }
+
+            return UserResource::collection(User::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
