@@ -37,7 +37,7 @@ class CategoryController extends Controller
                 $sortDirection = 'asc';
             }
 
-            $searchColumns = $request->input('search_columns', ['id', 'name'], 'unit');
+            $searchColumns = $request->input('search_columns', ['id', 'name', 'unit']);
 
             if ($request->input('no_pagination')) {
                 return CategoryResource::collection(Category::query()->get());
@@ -60,7 +60,6 @@ class CategoryController extends Controller
 
                 return CategoryResource::collection($query->paginate(5));
             }
-
 
             return CategoryResource::collection(Category::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
