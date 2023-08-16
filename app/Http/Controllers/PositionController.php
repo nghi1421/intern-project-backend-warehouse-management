@@ -18,17 +18,47 @@ class PositionController extends Controller
     {
         $user = $request->user();
 
+        $request->validate([
+            'no_pagination' => ['nullable', 'boolean'],
+        ]);
+
         if ($user->canAny(['manage-position', 'read-position'])) {
 
-            $request->validate([
-                'no_pagination' => ['nullable', 'boolean'],
-            ]);
+            $sortField = $request->input('sort_field', 'id');
+            if (!in_array($sortField, ['id', 'name', 'created_at', 'updated_at'])) {
+                $sortField = 'id';
+            }
+
+            $sortDirection = $request->input('sort_direction', 'asc');
+            if (!in_array($sortDirection, ['desc', 'asc'])) {
+                $sortDirection = 'asc';
+            }
+
+            $searchColumns = $request->input('search_columns', ['id', 'name']);
 
             if ($request->input('no_pagination')) {
                 return PositionResource::collection(Position::query()->get());
             }
 
-            return PositionResource::collection(Position::query()->paginate(5));
+            if ($searchTerm = $request->input('search')) {
+
+                $query = Position::query();
+
+                if ($searchColumns[0] === 'id') {
+                    $query = $query->where($searchColumns[0], $searchTerm);
+                } else {
+                    $query = $query->where($searchColumns[0], 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                for ($i = 1; $i < count($searchColumns); $i++) {
+                    $query = $query->orWhere($searchColumns[$i], 'LIKE', '%' . $searchTerm . '%');
+                }
+                $query = $query->orderBy($sortField, $sortDirection);
+
+                return PositionResource::collection($query->paginate(5));
+            }
+
+            return PositionResource::collection(Position::query()->orderBy($sortField, $sortDirection)->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);

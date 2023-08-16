@@ -61,7 +61,7 @@ class ProviderController extends Controller
 
             return ProviderResource::collection(Provider::query()
                 ->orderBy($sortField, $sortDirection)
-                ->paginate(5))
+                ->paginate(5));
         }
 
         return new JsonResponse(['message' => 'Forbidden'], 403);
