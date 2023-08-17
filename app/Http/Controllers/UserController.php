@@ -87,35 +87,32 @@ class UserController extends Controller
 
     public function update(Request $request, string $id): JsonResponse
     {
-        if ($request->user()->can('manage-account')) {
-            $user = User::query()->findOrFail($id);
 
-            if ($request->input('reset-password')) {
-                if (!$user->update(['passsword' => '123123123'])) {
-                    return new JsonResponse(['message' => 'Account update failed']);
-                }
+        $user = User::query()->findOrFail($id);
 
-                return new JsonResponse(['message' => 'Password account reseted successfully']);
-            }
-
-            $validated = Validator::make($request->all(), [
-                'username' => ['sometimes', 'min:8', 'max:255', Rule::unique('users', 'username')->ignore($user)],
-                'password' => ['sometimes', 'confirmed', 'min:8', 'max:255'],
-                'role_id' => ['sometimes', 'exists:roles,id'],
-                'permissions' => ['sometimes', 'array', 'min:1'],
-                'permissions.*' => ['sometimes', 'exists:permissions,id']
-            ])->validated();
-
-            if (!$user->update($validated)) {
+        if ($request->input('reset-password')) {
+            if (!$user->update(['passsword' => '123123123'])) {
                 return new JsonResponse(['message' => 'Account update failed']);
             }
 
-            $user->sync($request->input('permissions'));
-
-            return new JsonResponse(['message' => 'Account update successfully']);
+            return new JsonResponse(['message' => 'Password account reseted successfully']);
         }
 
-        return new JsonResponse(['message' => 'Forbidden'], 403);
+        $validated = Validator::make($request->all(), [
+            'username' => ['sometimes', 'min:8', 'max:255', Rule::unique('users', 'username')->ignore($user)],
+            'password' => ['sometimes', 'confirmed', 'min:8', 'max:255'],
+            'role_id' => ['sometimes', 'exists:roles,id'],
+            'permissions' => ['sometimes', 'array', 'min:1'],
+            'permissions.*' => ['sometimes', 'exists:permissions,id']
+        ])->validated();
+
+        if (!$user->update($validated)) {
+            return new JsonResponse(['message' => 'Account update failed']);
+        }
+
+        $user->sync($request->input('permissions'));
+
+        return new JsonResponse(['message' => 'Account update successfully']);
     }
 
 

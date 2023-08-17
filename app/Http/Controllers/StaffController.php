@@ -192,36 +192,19 @@ class StaffController extends Controller
             ]
         ])->validate();
 
-        $user = $request->user();
-
-        if ($user->canAny(['manage-all-staff', 'manage-branch-staff'])) {
-            if (
-                $user->can('manage-branch-staff')
-                && $staff->warehosue_branch_id !== $request->input('warehouse_branch_id')
-            ) {
+        try {
+            if (!$staff->update($validated)) {
                 return new JsonResponse([
-                    'message' => 'Forbidden'
-                ], 403);
-            }
-
-            try {
-                if (!$staff->update($validated)) {
-                    return new JsonResponse([
-                        'message' => 'Update staff failed',
-                    ], 422);
-                }
-            } catch (Exception $exception) {
-                return new JsonResponse([
-                    'message' => $exception->getMessage(),
+                    'message' => 'Update staff failed',
                 ], 422);
             }
-
-            return new JsonResponse(['message' => 'Staff successfully updated.']);
+        } catch (Exception $exception) {
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
         }
 
-        return new JsonResponse([
-            'message' => 'Forbidden'
-        ], 403);
+        return new JsonResponse(['message' => 'Staff successfully updated.']);
     }
 
     public function destroy(string $id, Request $request): JsonResponse

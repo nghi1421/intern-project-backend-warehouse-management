@@ -11,6 +11,7 @@ use App\Models\Enums\ImportStatus;
 use App\Models\Export;
 use App\Models\Import;
 use App\Models\Staff;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -261,11 +262,41 @@ class ImportController extends Controller
     {
         $user = $request->user();
 
+        $request->validate([
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date']
+        ]);
+
+        $dateRange = [
+            Carbon::create($request->input('start_date'))->startOfDay(),
+            Carbon::create($request->input('end_date'))->endOfDay()
+        ];
+
         $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
 
-        $imports = Import::query()->with('categories')->get();
+        if ($user->role->name === 'Nhan vien quan li') {
+            $imports = Import::query()
+                ->whereBetween('created_at', $dateRange)
+                ->with('categories')
+                ->get();
 
-        $exports = Export::query()->with('categories')->get();
+            $exports = Export::query()
+                ->whereBetween('created_at', $dateRange)
+                ->with('categories')
+                ->get();
+        } else {
+            $imports = Import::query()
+                ->whereBetween('created_at', $dateRange)
+                ->where('warehouse_branch_id', $staff->warehouse_branch_id)
+                ->with('categories')
+                ->get();
+
+            $exports = Export::query()
+                ->whereBetween('created_at', $dateRange)
+                ->where('warehouse_branch_id', $staff->warehouse_branch_id)
+                ->with('categories')
+                ->get();
+        }
 
         $dataLog = [];
 
@@ -322,6 +353,10 @@ class ImportController extends Controller
                 'created_at' => $export->created_at->format('m/d/Y'),
             ];
         }
+
+        usort($dataLog, function ($a, $b) {
+            return strtotime($a['created_at']) - strtotime($b['created_at']);
+        });
 
         return new JsonResponse($dataLog);
     }
