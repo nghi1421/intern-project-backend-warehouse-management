@@ -42,6 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('imports', ImportController::class);
 
+    Route::get('log', [ImportController::class, 'log']);
+
     Route::resource('exports', ExportController::class);
 
     Route::resource('providers', ProviderController::class);

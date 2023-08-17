@@ -6,6 +6,9 @@ use App\Http\Requests\Import\CreateImport;
 use App\Http\Requests\Import\UpdateImport;
 use App\Http\Resources\ImportCollection;
 use App\Http\Resources\ImportResource;
+use App\Models\Enums\ExportStatus;
+use App\Models\Enums\ImportStatus;
+use App\Models\Export;
 use App\Models\Import;
 use App\Models\Staff;
 use Exception;
@@ -252,5 +255,74 @@ class ImportController extends Controller
             ]);
         }
         return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    public function log(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $staff = Staff::query()->where('user_id', $user->getKey())->firstOrFail();
+
+        $imports = Import::query()->with('categories')->get();
+
+        $exports = Export::query()->with('categories')->get();
+
+        $dataLog = [];
+
+        foreach ($imports as $import) {
+            $fromWarehouseBranch = $import->fromWarehouseBranch;
+
+            $categories = array_map(function ($category) {
+                $quantity = $category['pivot']['quantity'];
+                unset($category['pivot']);
+                return [
+                    ...$category,
+                    'amount' => number_format($quantity, 0, ".", ","),
+                ];
+            }, $import->categories->toArray());
+
+            $sum = collect($import->categories->toArray())->reduce(function ($sum, $category) {
+                return $sum + $category['pivot']['quantity'] * $category['pivot']['unit_price'];
+            }, 0);
+
+            $dataLog[] = [
+                'is_import' => 1,
+                'from' => $import->provider ? $import->provider->name : $fromWarehouseBranch->name,
+                'to' => $import->warehouseBranch->name,
+                'status_id' => $import->status,
+                'status' => ImportStatus::tryFrom($import->status)->label(),
+                'detail' =>  $categories,
+                'type' => $fromWarehouseBranch ? 'Chuyển kho' : 'Nhập hàng',
+                'total' => number_format($sum, 0, ".", ",") . ' VND',
+                'created_at' => $import->created_at->format('m/d/Y'),
+            ];
+        }
+
+        foreach ($exports as $export) {
+            $toWarehouseBranch = $export->toWarehouseBranch;
+
+            $categories = array_map(function ($category) {
+                $quantity = $category['pivot']['quantity'];
+                unset($category['pivot']);
+                return [
+                    ...$category,
+                    'amount' => number_format($quantity, 0, ".", ","),
+                ];
+            }, $export->categories->toArray());
+
+            $dataLog[] = [
+                'is_import' => 0,
+                'from' => $export->warehouseBranch->name,
+                'to' => $toWarehouseBranch ? $toWarehouseBranch->name : 'Cửa hàng',
+                'status_id' => $import->status,
+                'status' => ExportStatus::tryFrom($export->status)->label(),
+                'detail' =>  $categories,
+                'type' => $toWarehouseBranch ? 'Chuyển kho' : 'Xuất hàng',
+                'total' => 0 . ' VND',
+                'created_at' => $export->created_at->format('m/d/Y'),
+            ];
+        }
+
+        return new JsonResponse($dataLog);
     }
 }
