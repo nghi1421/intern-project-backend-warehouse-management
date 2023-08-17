@@ -13,7 +13,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 
 class ExportController extends Controller
 {
@@ -111,6 +110,11 @@ class ExportController extends Controller
 
                 $exportDetails = array_combine($categories, $exportDetails);
 
+                if (!$this->isEnoughStock($exportDetails, $request->input('warehouse_branch_id'))) {
+                    return new JsonResponse([
+                        'message' => 'Does not enough stock to export'
+                    ], 422);
+                }
                 $newExport = Export::query()->create($request->validated());
 
                 $newExport->categories()->attach($exportDetails);
@@ -225,5 +229,38 @@ class ExportController extends Controller
             ]);
         }
         return new JsonResponse(['message' => 'Forbidden'], 403);
+    }
+
+    private function isEnoughStock(array $exportDetails, string $warehouseBranchId): bool
+    {
+        foreach ($exportDetails as $categoryId => $exportDetail) {
+            $quantity = Stock::query()->where('category_id', $categoryId)->get()->sum('quantity');
+            if ($quantity < $exportDetail['quantity']) {
+
+                $quantity -= $exportDetail['quantity'];
+
+                $exportBranches = Export::query()
+                    ->where('warehouse_branch_id', $warehouseBranchId)
+                    ->whereIn('status', [1, 2])
+                    ->with(['categories' => function ($query) use ($categoryId) {
+                        $query->where('id', $categoryId);
+                    }])
+                    ->get();
+
+                foreach ($exportBranches as $export) {
+                    $quantity -= $export->categories[0]->pivot->quantity;
+                    if ($quantity <= 0) {
+                        break;
+                    }
+                }
+
+                if ($quantity <= 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        return true;
     }
 }

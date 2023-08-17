@@ -33,7 +33,7 @@ class StockResource extends JsonResource
             'import' => [
                 'id' => $this->import_id,
                 'created_by' => $staff->name,
-                'provider' => $provider->name,
+                'provider' => $provider ? $provider->name : $import->warehouseBranch->name,
                 'created_at' => $import->created_at->format('H:i:s d/m/Y')
             ],
             'expiry_date' => $this->expiry_date,

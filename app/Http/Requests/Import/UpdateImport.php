@@ -22,7 +22,7 @@ class UpdateImport extends FormRequest
             'amounts' => ['sometimes', 'array', 'min:1'],
             'amounts.*' => ['sometimes', 'numeric', 'min:1'],
             'unit_prices' => ['sometimes', 'array', 'min:1'],
-            'unit_prices.*' => ['sometimes', 'numeric', 'min:1'],
+            'unit_prices.*' => ['sometimes', 'numeric'],
         ];
     }
 }

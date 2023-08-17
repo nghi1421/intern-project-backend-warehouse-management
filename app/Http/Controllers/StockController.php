@@ -31,6 +31,13 @@ class StockController extends Controller
 
         $searchColumns = $request->input('search_columns', ['id', 'import_id', 'expiry_date']);
 
+        switch ($sortField) {
+            case 'category_name': {
+                    $sortField = 'category_id';
+                    break;
+                }
+        }
+
         if (
             $user->canAny(['read-branch-stock', 'manage-branch-stock'])
         ) {
