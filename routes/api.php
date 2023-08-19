@@ -12,6 +12,7 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\TrackController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseBranchController;
 use Illuminate\Http\JsonResponse;
@@ -57,6 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/permissions', [PermissionController::class, 'index']);
 
     Route::get('/roles', [RoleController::class, 'index']);
+
+    Route::get('track', [TrackController::class, '__invoke']);
 });
 
 Route::get('test', function () {
